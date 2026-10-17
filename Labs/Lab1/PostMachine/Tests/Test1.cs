@@ -294,7 +294,7 @@ namespace PostMachine.Tests
             return output.ToString();
         }
 
-        [TestMethod, Timeout(5000)]
+        [TestMethod, Timeout(5000, CooperativeCancellation = true)]
         public void Exit_Immediately_ShowsHeaderAndStartPosition()
         {
             string output = Run("7");
@@ -302,103 +302,103 @@ namespace PostMachine.Tests
             StringAssert.Contains(output, "CURRENT POSITION: 0");
         }
 
-        [TestMethod, Timeout(5000)]
+        [TestMethod, Timeout(5000, CooperativeCancellation = true)]
         public void MoveRight_UpdatesDisplayedPosition()
         {
             string output = Run("4", "3", "7");
             StringAssert.Contains(output, "CURRENT POSITION: 3");
         }
 
-        [TestMethod, Timeout(5000)]
+        [TestMethod, Timeout(5000, CooperativeCancellation = true)]
         public void MoveLeft_GoesToNegativePosition()
         {
             string output = Run("3", "2", "7");
             StringAssert.Contains(output, "CURRENT POSITION: -2");
         }
 
-        [TestMethod, Timeout(5000)]
+        [TestMethod, Timeout(5000, CooperativeCancellation = true)]
         public void CheckCell_OnEmptyTape_ReportsNotLabelled()
         {
             string output = Run("6", "", "7");
             StringAssert.Contains(output, "Current cell is not labelled");
         }
 
-        [TestMethod, Timeout(5000)]
+        [TestMethod, Timeout(5000, CooperativeCancellation = true)]
         public void MakeLabel_ThenCheck_ReportsLabelled()
         {
             string output = Run("1", "6", "", "7");
             StringAssert.Contains(output, "Current cell is already labelled");
         }
 
-        [TestMethod, Timeout(5000)]
+        [TestMethod, Timeout(5000, CooperativeCancellation = true)]
         public void RemoveLabel_ThenCheck_ReportsNotLabelled()
         {
             string output = Run("1", "2", "6", "", "7");
             StringAssert.Contains(output, "Current cell is not labelled");
         }
 
-        [TestMethod, Timeout(5000)]
+        [TestMethod, Timeout(5000, CooperativeCancellation = true)]
         public void RemoveLabel_OnEmptyCell_DoesNotCrash()
         {
             string output = Run("2", "6", "", "7");
             StringAssert.Contains(output, "Current cell is not labelled");
         }
 
-        [TestMethod, Timeout(5000)]
+        [TestMethod, Timeout(5000, CooperativeCancellation = true)]
         public void MoveAwayFromLabel_NewCellIsEmpty()
         {
             string output = Run("1", "4", "1", "6", "", "7");
             StringAssert.Contains(output, "Current cell is not labelled");
         }
 
-        [TestMethod, Timeout(5000)]
+        [TestMethod, Timeout(5000, CooperativeCancellation = true)]
         public void MoveBackToLabel_CellIsLabelled()
         {
             string output = Run("1", "4", "2", "3", "2", "6", "", "7");
             StringAssert.Contains(output, "Current cell is already labelled");
         }
 
-        [TestMethod, Timeout(5000)]
+        [TestMethod, Timeout(5000, CooperativeCancellation = true)]
         public void NewTape_ResetsPositionAndLabels()
         {
             string output = Run("1", "4", "5", "5", "6", "", "7");
             StringAssert.Contains(output, "CURRENT POSITION: 5");
-            Assert.IsTrue(output.LastIndexOf("CURRENT POSITION: 0")
-                          > output.IndexOf("CURRENT POSITION: 5"));
+            Assert.IsGreaterThan(output.IndexOf("CURRENT POSITION: 5"), output.LastIndexOf("CURRENT POSITION: 0")
+);
             StringAssert.Contains(output, "Current cell is not labelled");
         }
 
 
 
-        [TestMethod, Timeout(5000)]
+        [TestMethod, Timeout(5000, CooperativeCancellation = true)]
         public void InvalidMenuInput_ShowsError_AndProgramContinues()
         {
             string output = Run("abc", "", "7");
             StringAssert.Contains(output, "Invalid data type!");
         }
 
-        [TestMethod, Timeout(5000)]
+        [TestMethod, Timeout(5000, CooperativeCancellation = true)]
         public void UnknownMenuNumber_IsIgnored()
         {
             string output = Run("9", "7");
             StringAssert.Contains(output, "CURRENT POSITION: 0");
         }
 
-        [TestMethod, Timeout(5000)]
+        [TestMethod, Timeout(5000, CooperativeCancellation = true)]
         public void InvalidStep_ShowsError_PositionUnchanged()
         {
             string output = Run("4", "abc", "", "7");
             StringAssert.Contains(output, "Invalid data type!");
-            Assert.IsFalse(output.Contains("CURRENT POSITION: 1"));
+            Assert.DoesNotContain("CURRENT POSITION: 1", output);
         }
 
-        [TestMethod, Timeout(5000)]
+        [TestMethod, Timeout(5000, CooperativeCancellation = true)]
         public void NegativeStep_IsRejected_PositionUnchanged()
         {
             string output = Run("3", "-3", "", "7");
             StringAssert.Contains(output, "Invalid data type!");
-            Assert.IsFalse(output.Contains("CURRENT POSITION: 3"));
-            Assert.IsFalse(output.Contains("CURRENT POSITION: -3"));
+            Assert.DoesNotContain("CURRENT POSITION: 3", output);
+            Assert.DoesNotContain("CURRENT POSITION: -3", output);
         }
     }
 
