@@ -24,7 +24,7 @@ namespace Tests
             Console.SetIn(oldIn);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow("0", 0)]
         [DataRow("1", 1)]
         [DataRow("2", 2)]
@@ -36,7 +36,7 @@ namespace Tests
             Assert.AreEqual(expected, InputValidator.ValidateInt());
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow("-1")]
         [DataRow("3")]
         [DataRow("100")]
@@ -48,7 +48,7 @@ namespace Tests
                 () => InputValidator.ValidateInt());
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow("abc")]
         [DataRow("1.5")]
         [DataRow("")]
