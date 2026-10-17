@@ -81,10 +81,18 @@ jobs:
         shell: bash
         run: |
           while IFS= read -r project; do
+            echo "Checking formatting: $project"
             dotnet format "$project" \
               --verify-no-changes \
-              --no-restore || exit $?
+              --no-restore \
+              --verbosity diagnostic
+            result=$?
+            if [ "$result" -ne 0 ]; then
+              echo "Formatting check failed for: $project (exit code $result)"
+              exit "$result"
+            fi
           done < projects.txt
+
 
       - name: Build all projects
         shell: bash
