@@ -1,0 +1,150 @@
+
+name: C# CI/CD
+
+on:
+  push:
+    branches:
+      - "**"
+    tags:
+      - "v*"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-build:
+    name: Test, analyze and build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Find C# projects
+        id: projects
+        shell: bash
+        run: |
+          mapfile -t PROJECTS < <(
+            find Labs/Lab1 -type f -name '*.csproj' \
+              -not -path '*/bin/*' \
+              -not -path '*/obj/*'
+          )
+
+          if [ "${#PROJECTS[@]}" -eq 0 ]; then
+            echo "No .csproj files found"
+            exit 1
+          fi
+
+          printf '%s\n' "${PROJECTS[@]}" \
+            | tee projects.txt
+
+          echo "count=${#PROJECTS[@]}" >> "$GITHUB_OUTPUT"
+
+      - name: Restore all projects
+        shell: bash
+        run: |
+          while IFS= read -r project; do
+            dotnet restore "$project"
+          done < projects.txt
+
+      - name: Run tests and collect coverage
+        shell: bash
+        run: |
+          found=0
+
+          while IFS= read -r project; do
+            if [[ "$project" == */Tests/*.csproj ]]; then
+              found=1
+              echo "Testing $project"
+
+              dotnet test "$project" \
+                --configuration Release \
+                --no-restore \
+                --collect:"XPlat Code Coverage" \
+                --results-directory ./TestResults
+            fi
+          done < projects.txt
+
+          if [ "$found" -eq 0 ]; then
+            echo "No test projects found under Tests directories"
+            exit 1
+          fi
+
+      - name: Check code formatting
+        shell: bash
+        run: |
+          while IFS= read -r project; do
+            dotnet format "$project" \
+              --verify-no-changes \
+              --no-restore
+          done < projects.txt
+
+      - name: Build all projects
+        shell: bash
+        run: |
+          while IFS= read -r project; do
+            dotnet build "$project" \
+              --configuration Release \
+              --no-restore
+          done < projects.txt
+
+      - name: Publish Tic-Tac-Toe
+        run: |
+          dotnet publish \
+            "Labs/Lab1/Tic-Tac-Toe/Tic-Tac-Toe/Tic-Tac-Toe.csproj" \
+            --configuration Release \
+            --output ./artifacts/Tic-Tac-Toe
+
+      - name: Publish PostMachine
+        run: |
+          dotnet publish \
+            "Labs/Lab1/PostMachine/PostMachine/PostMachine.csproj" \
+            --configuration Release \
+            --output ./artifacts/PostMachine
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: labs-build
+          path: artifacts/
+          if-no-files-found: error
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage
+          path: TestResults/**/coverage.cobertura.xml
+          if-no-files-found: warn
+
+  release:
+    name: Publish GitHub Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: test-and-build
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: labs-build
+          path: artifacts/
+
+      - name: Package artifacts
+        run: tar -czf labs-build.tar.gz -C artifacts .
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: labs-build.tar.gz
+          generate_release_notes: true
