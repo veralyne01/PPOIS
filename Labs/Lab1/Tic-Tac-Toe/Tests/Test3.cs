@@ -218,7 +218,7 @@ namespace Tests
             Assert.AreSame(Player2, CurrentPlayer);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(0b000000111)]
         [DataRow(0b000111000)]
         [DataRow(0b111000000)]
