@@ -83,7 +83,7 @@ jobs:
           while IFS= read -r project; do
             dotnet format "$project" \
               --verify-no-changes \
-              --no-restore
+              --no-restore || exit $?
           done < projects.txt
 
       - name: Build all projects
