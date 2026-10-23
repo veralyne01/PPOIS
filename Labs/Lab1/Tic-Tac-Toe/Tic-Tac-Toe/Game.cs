@@ -89,7 +89,8 @@ namespace TicTacToe
                 MakeMove(row, col);
                 CheckGameStat();
                 SwitchPlayers();
-                Console.Clear();
+                try { Console.Clear(); }
+                catch (IOException) { }
             }
         }
     }

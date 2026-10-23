@@ -328,5 +328,88 @@ namespace Tests
                 "InProcess",
                 GetField("gameStat").ToString());
         }
+        private string RunPlay(params string[] inputLines)
+        {
+            Console.SetIn(new StringReader(string.Join("\n", inputLines) + "\n"));
+            var writer = new StringWriter();
+            Console.SetOut(writer);
+
+            game.NewGame();
+            game.Play();
+
+            return writer.ToString();
+        }
+
+        [TestMethod]
+        public void Play_XWinsByTopRow_PrintsXWins()
+        {
+            // X(0,0) O(1,0) X(0,1) O(1,1) X(0,2), потом Enter после победы
+            string output = RunPlay(
+                "0", "0",
+                "1", "0",
+                "0", "1",
+                "1", "1",
+                "0", "2",
+                "");
+
+            StringAssert.Contains(output, "Player X wins!");
+            Assert.AreEqual("Win", GetField("gameStat").ToString());
+        }
+
+        [TestMethod]
+        public void Play_OWinsByMiddleRow_PrintsOWins()
+        {
+            // X(0,0) O(1,0) X(0,1) O(1,1) X(2,2) O(1,2)
+            string output = RunPlay(
+                "0", "0",
+                "1", "0",
+                "0", "1",
+                "1", "1",
+                "2", "2",
+                "1", "2",
+                "");
+
+            StringAssert.Contains(output, "Player O wins!");
+            Assert.AreEqual("Win", GetField("gameStat").ToString());
+        }
+
+        [TestMethod]
+        public void Play_FullBoardWithoutWinner_PrintsDraw()
+        {
+            // Порядок клеток: X0 O1 X2 O4 X3 O5 X7 O6 X8
+            string output = RunPlay(
+                "0", "0",
+                "0", "1",
+                "0", "2",
+                "1", "1",
+                "1", "0",
+                "1", "2",
+                "2", "1",
+                "2", "0",
+                "2", "2",
+                "");
+
+            StringAssert.Contains(output, "Friendship wins");
+            Assert.AreEqual("Draw", GetField("gameStat").ToString());
+        }
+
+        [TestMethod]
+        public void Play_MoveToOccupiedCell_PrintsMessageAndGameContinues()
+        {
+            // X(0,0), O(0,0) занято, Enter, затем O ходит повторно
+            // (из-за двойного SwitchPlayers), в итоге X добирает верхнюю строку
+            string output = RunPlay(
+                "0", "0",
+                "0", "0",
+                "",
+                "1", "0",
+                "0", "1",
+                "1", "1",
+                "0", "2",
+                "");
+
+            StringAssert.Contains(output, "This cell is occupied by X!");
+            StringAssert.Contains(output, "Player X wins!");
+        }
     }
 }
