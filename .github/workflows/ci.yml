@@ -54,21 +54,41 @@ jobs:
             dotnet restore "$project"
           done < projects.txt
 
-      - name: Run tests and collect coverage
+      - name: Run tests and check coverage threshold
         shell: bash
         run: |
+          threshold=90
           found=0
+          failed=0
 
           while IFS= read -r project; do
             if [[ "$project" == */Tests/*.csproj ]]; then
               found=1
-              echo "Testing $project"
+              name=￼(dirname "$(dirname "$project")")")
+              outdir="./TestResults/$name"
+              echo "Testing $project ($name)"
 
               dotnet test "$project" \
                 --configuration Release \
                 --no-restore \
                 --collect:"XPlat Code Coverage" \
-                --results-directory ./TestResults
+                --results-directory "$outdir" < /dev/null || failed=1
+
+              file=$(find "$outdir" -name coverage.cobertura.xml | head -n 1)
+              if [ -z "$file" ]; then
+                echo "::error::No coverage file for $name"
+                failed=1
+                continue
+              fi
+
+              rate=$(grep -o -m1 'line-rate="[0-9.]*"' "$file" | head -n 1 | cut -d'"' -f2)
+              percent=$(awk -v r="$rate" 'BEGIN { printf "%.2f", r * 100 }')
+              echo "Line coverage for $name: $percent% (required: $threshold%)"
+
+              if awk -v p="$percent" -v t="$threshold" 'BEGIN { exit !(p < t) }'; then
+                echo "::error::Coverage of $name is $percent%, below $threshold%"
+                failed=1
+              fi
             fi
           done < projects.txt
 
@@ -76,6 +96,8 @@ jobs:
             echo "No test projects found under Tests directories"
             exit 1
           fi
+
+          exit "$failed"
 
       - name: Coverage summary
         if: always()
