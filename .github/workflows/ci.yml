@@ -187,28 +187,6 @@ jobs:
       contents: write
 
     steps:
-      - name: Publish Tic-Tac-Toe
-        run: |
-          dotnet publish \
-            "Labs/Lab1/Tic-Tac-Toe/Tic-Tac-Toe/Tic-Tac-Toe.csproj" \
-            -c Release \
-            -r win-x64 \
-            --self-contained true \
-            -p:PublishSingleFile=true \
-            -p:IncludeNativeLibrariesForSelfExtract=true \
-            -o ./artifacts/Tic-Tac-Toe
-
-      - name: Publish PostMachine
-        run: |
-          dotnet publish \
-            "Labs/Lab1/PostMachine/PostMachine/PostMachine.csproj" \
-            -c Release \
-            -r win-x64 \
-            --self-contained true \
-            -p:PublishSingleFile=true \
-            -p:IncludeNativeLibrariesForSelfExtract=true \
-            -o ./artifacts/PostMachine
-            
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
@@ -222,3 +200,26 @@ jobs:
             artifacts/Tic-Tac-Toe/Tic-Tac-Toe.exe
             artifacts/PostMachine/PostMachine.exe
           generate_release_notes: true
+
+      
+      - name: Publish Tic-Tac-Toe
+        run: |
+          dotnet publish \
+            "Labs/Lab1/Tic-Tac-Toe/Tic-Tac-Toe/Tic-Tac-Toe.csproj" \
+            --configuration Release \
+            --runtime win-x64 \
+            --self-contained true \
+            -p:PublishSingleFile=true \
+            -p:IncludeNativeLibrariesForSelfExtract=true \
+            --output ./artifacts/Tic-Tac-Toe
+
+      - name: Publish PostMachine
+        run: |
+          dotnet publish \
+            "Labs/Lab1/PostMachine/PostMachine/PostMachine.csproj" \
+            --configuration Release \
+            --runtime win-x64 \
+            --self-contained true \
+            -p:PublishSingleFile=true \
+            -p:IncludeNativeLibrariesForSelfExtract=true \
+            --output ./artifacts/PostMachine
