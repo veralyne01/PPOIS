@@ -153,6 +153,10 @@ jobs:
           dotnet publish \
             "Labs/Lab1/Tic-Tac-Toe/Tic-Tac-Toe/Tic-Tac-Toe.csproj" \
             --configuration Release \
+            --runtime win-x64 \
+            --self-contained true \
+            -p:PublishSingleFile=true \
+            -p:IncludeNativeLibrariesForSelfExtract=true \
             --output ./artifacts/Tic-Tac-Toe
 
       - name: Publish PostMachine
@@ -160,6 +164,10 @@ jobs:
           dotnet publish \
             "Labs/Lab1/PostMachine/PostMachine/PostMachine.csproj" \
             --configuration Release \
+            --runtime win-x64 \
+            --self-contained true \
+            -p:PublishSingleFile=true \
+            -p:IncludeNativeLibrariesForSelfExtract=true \
             --output ./artifacts/PostMachine
 
       - name: Upload build artifacts
@@ -193,6 +201,12 @@ jobs:
           name: labs-build
           path: artifacts/
 
+      - name: Verify executables
+        run: |
+          find artifacts -type f -name '*.exe'
+          test -f artifacts/Tic-Tac-Toe/Tic-Tac-Toe.exe
+          test -f artifacts/PostMachine/PostMachine.exe
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -200,26 +214,3 @@ jobs:
             artifacts/Tic-Tac-Toe/Tic-Tac-Toe.exe
             artifacts/PostMachine/PostMachine.exe
           generate_release_notes: true
-
-      
-      - name: Publish Tic-Tac-Toe
-        run: |
-          dotnet publish \
-            "Labs/Lab1/Tic-Tac-Toe/Tic-Tac-Toe/Tic-Tac-Toe.csproj" \
-            --configuration Release \
-            --runtime win-x64 \
-            --self-contained true \
-            -p:PublishSingleFile=true \
-            -p:IncludeNativeLibrariesForSelfExtract=true \
-            --output ./artifacts/Tic-Tac-Toe
-
-      - name: Publish PostMachine
-        run: |
-          dotnet publish \
-            "Labs/Lab1/PostMachine/PostMachine/PostMachine.csproj" \
-            --configuration Release \
-            --runtime win-x64 \
-            --self-contained true \
-            -p:PublishSingleFile=true \
-            -p:IncludeNativeLibrariesForSelfExtract=true \
-            --output ./artifacts/PostMachine
