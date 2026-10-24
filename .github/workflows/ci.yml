@@ -64,7 +64,7 @@ jobs:
           while IFS= read -r project; do
             if [[ "$project" == */Tests/*.csproj ]]; then
               found=1
-              name=￼(dirname "$(dirname "$project")")")
+              name=$(basename "$(dirname "$(dirname "$project")")")
               outdir="./TestResults/$name"
               echo "Testing $project ($name)"
 
