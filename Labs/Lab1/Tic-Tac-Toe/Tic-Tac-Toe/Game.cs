@@ -10,12 +10,6 @@ namespace TicTacToe
         private Player player2;
         private GameStat gameStat;
         private Player curPlayer;
-        private enum GameStat
-        {
-            Win,
-            Draw,
-            InProcess
-        }
 
         private int[] winCombinations =
         {
@@ -72,8 +66,8 @@ namespace TicTacToe
 
         public void NewGame()
         {
-            player1 = new Player(Player.Values.X);
-            player2 = new Player(Player.Values.O);
+            player1 = new Player(Values.X);
+            player2 = new Player(Values.O);
             gameStat = GameStat.InProcess;
             curPlayer = player1;
         }

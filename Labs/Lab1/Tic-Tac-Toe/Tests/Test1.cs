@@ -11,26 +11,26 @@ namespace Tests
         [TestMethod]
         public void Constructor_X_SetsSignAndEmptyMap()
         {
-            var player = new Player(Player.Values.X);
+            var player = new Player(Values.X);
 
-            Assert.AreEqual(Player.Values.X, player.Sign);
+            Assert.AreEqual(Values.X, player.Sign);
             Assert.AreEqual(0, player.map);
         }
 
         [TestMethod]
         public void Constructor_O_SetsSignAndEmptyMap()
         {
-            var player = new Player(Player.Values.O);
+            var player = new Player(Values.O);
 
-            Assert.AreEqual(Player.Values.O, player.Sign);
+            Assert.AreEqual(Values.O, player.Sign);
             Assert.AreEqual(0, player.map);
         }
 
         [TestMethod]
         public void Players_HaveIndependentMaps()
         {
-            var player1 = new Player(Player.Values.X);
-            var player2 = new Player(Player.Values.O);
+            var player1 = new Player(Values.X);
+            var player2 = new Player(Values.O);
 
             player1.map |= 1 << 0;
 

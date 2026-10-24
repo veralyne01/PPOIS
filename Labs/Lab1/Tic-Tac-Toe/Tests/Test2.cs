@@ -64,8 +64,8 @@ namespace Tests
         [TestMethod]
         public void ValidateMove_EmptyCell_ReturnsTrue()
         {
-            var player1 = new Player(Player.Values.X);
-            var player2 = new Player(Player.Values.O);
+            var player1 = new Player(Values.X);
+            var player2 = new Player(Values.O);
 
             Assert.IsTrue(
                 InputValidator.ValidateMove(0, player1, player2));
@@ -74,8 +74,8 @@ namespace Tests
         [TestMethod]
         public void ValidateMove_CellOccupiedByX_ReturnsFalse()
         {
-            var player1 = new Player(Player.Values.X);
-            var player2 = new Player(Player.Values.O);
+            var player1 = new Player(Values.X);
+            var player2 = new Player(Values.O);
             player1.map |= 1 << 4;
 
             Assert.IsFalse(
@@ -85,8 +85,8 @@ namespace Tests
         [TestMethod]
         public void ValidateMove_CellOccupiedByO_ReturnsFalse()
         {
-            var player1 = new Player(Player.Values.X);
-            var player2 = new Player(Player.Values.O);
+            var player1 = new Player(Values.X);
+            var player2 = new Player(Values.O);
             player2.map |= 1 << 4;
 
             Assert.IsFalse(
@@ -96,8 +96,8 @@ namespace Tests
         [TestMethod]
         public void ValidateMove_DoesNotChangePlayerMaps()
         {
-            var player1 = new Player(Player.Values.X);
-            var player2 = new Player(Player.Values.O);
+            var player1 = new Player(Values.X);
+            var player2 = new Player(Values.O);
             player1.map = 1 << 0;
             player2.map = 1 << 4;
 

@@ -8,11 +8,6 @@ namespace TicTacToe
 {
     internal class Player
     {
-        internal enum Values
-        {
-            X,
-            O
-        }
         internal int map;
         internal Values Sign;
         internal Player(Values sign)
