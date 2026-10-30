@@ -32,7 +32,7 @@ jobs:
         shell: bash
         run: |
           mapfile -t PROJECTS < <(
-            find Labs/Lab1 -type f -name '*.csproj' \
+            find Labs/lab1 -type f -name '*.csproj' \
               -not -path '*/bin/*' \
               -not -path '*/obj/*'
           )
@@ -151,7 +151,7 @@ jobs:
       - name: Publish Tic-Tac-Toe
         run: |
           dotnet publish \
-            "Labs/Lab1/Tic-Tac-Toe/Tic-Tac-Toe/Tic-Tac-Toe.csproj" \
+            "Labs/lab1/Tic-Tac-Toe/Tic-Tac-Toe/Tic-Tac-Toe.csproj" \
             --configuration Release \
             --runtime win-x64 \
             --self-contained true \
