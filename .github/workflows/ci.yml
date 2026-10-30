@@ -162,7 +162,7 @@ jobs:
       - name: Publish PostMachine
         run: |
           dotnet publish \
-            "Labs/Lab1/PostMachine/PostMachine/PostMachine.csproj" \
+            "Labs/lab1/PostMachine/PostMachine/PostMachine.csproj" \
             --configuration Release \
             --runtime win-x64 \
             --self-contained true \
