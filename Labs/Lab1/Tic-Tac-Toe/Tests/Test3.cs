@@ -389,7 +389,7 @@ namespace Tests
         {
             string output = RunPlay(
                 "0", "0", "",
-                "0", "0", 
+                "0", "0",
                 "",
                 "1", "0", "",
                 "0", "1", "",
