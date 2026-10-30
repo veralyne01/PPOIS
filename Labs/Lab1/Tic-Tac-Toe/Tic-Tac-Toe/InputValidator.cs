@@ -15,9 +15,9 @@ namespace TicTacToe
             else throw new FormatException("Invalid data type!\n");
         }
 
-        public static bool ValidateMove(int target, Player player1, Player player2)
+        public static bool ValidateMove(int target, int map1, int map2)
         {
-            if (((player1.map | player2.map) & (1 << target)) == 0) return true;
+            if (((map1 | map2) & (1 << target)) == 0) return true;
             else return false;
         }
 

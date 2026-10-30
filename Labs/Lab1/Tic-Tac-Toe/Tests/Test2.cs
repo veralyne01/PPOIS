@@ -10,7 +10,7 @@ namespace Tests
     [TestClass]
     public class InputValidatorTests
     {
-        private TextReader oldIn;
+        private TextReader oldIn = null!;
 
         [TestInitialize]
         public void Initialize()
@@ -68,7 +68,7 @@ namespace Tests
             var player2 = new Player(Values.O);
 
             Assert.IsTrue(
-                InputValidator.ValidateMove(0, player1, player2));
+                InputValidator.ValidateMove(0, player1.map, player2.map));
         }
 
         [TestMethod]
@@ -79,7 +79,7 @@ namespace Tests
             player1.map |= 1 << 4;
 
             Assert.IsFalse(
-                InputValidator.ValidateMove(4, player1, player2));
+                InputValidator.ValidateMove(4, player1.map, player2.map));
         }
 
         [TestMethod]
@@ -90,7 +90,7 @@ namespace Tests
             player2.map |= 1 << 4;
 
             Assert.IsFalse(
-                InputValidator.ValidateMove(4, player1, player2));
+                InputValidator.ValidateMove(4, player1.map, player2.map));
         }
 
         [TestMethod]
@@ -101,7 +101,7 @@ namespace Tests
             player1.map = 1 << 0;
             player2.map = 1 << 4;
 
-            InputValidator.ValidateMove(8, player1, player2);
+            InputValidator.ValidateMove(8, player1.map, player2.map);
 
             Assert.AreEqual(1 << 0, player1.map);
             Assert.AreEqual(1 << 4, player2.map);

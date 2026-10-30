@@ -11,9 +11,9 @@ namespace Tests
     [DoNotParallelize]
     public class GameTests
     {
-        private Game game;
-        private TextReader oldIn;
-        private TextWriter oldOut;
+        private Gameplay game = null!;
+        private TextReader oldIn = null!;
+        private TextWriter oldOut = null!;
 
         private Player Player1 =>
             (Player)GetField("player1");
@@ -33,8 +33,7 @@ namespace Tests
             Console.SetIn(new StringReader("\n\n\n"));
             Console.SetOut(new StringWriter());
 
-            game = new Game();
-            game.NewGame();
+            game = new Gameplay();
         }
 
         [TestCleanup]
@@ -46,32 +45,32 @@ namespace Tests
 
         private object GetField(string name)
         {
-            return typeof(Game)
+            return typeof(Gameplay)!
                 .GetField(name, BindingFlags.Instance |
-                                BindingFlags.NonPublic)
-                .GetValue(game);
+                                BindingFlags.NonPublic)!
+                .GetValue(game)!;
         }
 
         private void SetField(string name, object value)
         {
-            typeof(Game)
+            typeof(Gameplay)
                 .GetField(name, BindingFlags.Instance |
-                                BindingFlags.NonPublic)
+                                BindingFlags.NonPublic)!
                 .SetValue(game, value);
         }
 
         private void Call(string name, params object[] args)
         {
-            typeof(Game)
+            typeof(Gameplay)
                 .GetMethod(name, BindingFlags.Instance |
-                                 BindingFlags.NonPublic)
+                                 BindingFlags.NonPublic)!
                 .Invoke(game, args);
         }
 
         private string Output()
         {
             return oldOut is StringWriter
-                ? oldOut.ToString()
+                ? oldOut.ToString()!
                 : string.Empty;
         }
 
@@ -93,7 +92,7 @@ namespace Tests
             Player1.map = 1 << 0;
             Player2.map = 1 << 1;
 
-            game.NewGame();
+            game = new Gameplay();
 
             Assert.AreEqual(0, Player1.map);
             Assert.AreEqual(0, Player2.map);
@@ -104,7 +103,7 @@ namespace Tests
         {
             Call("SwitchPlayers");
 
-            game.NewGame();
+            game = new Gameplay();
 
             Assert.AreSame(Player1, CurrentPlayer);
         }
@@ -130,7 +129,6 @@ namespace Tests
         public void MakeMove_EmptyCell_AddsMarkToCurrentPlayer()
         {
             Call("MakeMove", 0, 0);
-
             Assert.AreEqual(1 << 0, Player1.map);
             Assert.AreEqual(0, Player2.map);
         }
@@ -139,7 +137,6 @@ namespace Tests
         public void MakeMove_CenterCell_AddsMarkToCorrectPosition()
         {
             Call("MakeMove", 1, 1);
-
             Assert.AreEqual(1 << 4, Player1.map);
         }
 
@@ -319,7 +316,7 @@ namespace Tests
             Player2.map = 1 << 1;
             Call("SwitchPlayers");
 
-            game.NewGame();
+            game = new Gameplay();
 
             Assert.AreEqual(0, Player1.map);
             Assert.AreEqual(0, Player2.map);
@@ -333,10 +330,7 @@ namespace Tests
             Console.SetIn(new StringReader(string.Join("\n", inputLines) + "\n"));
             var writer = new StringWriter();
             Console.SetOut(writer);
-
-            game.NewGame();
             game.Play();
-
             return writer.ToString();
         }
 
@@ -344,10 +338,10 @@ namespace Tests
         public void Play_XWinsByTopRow_PrintsXWins()
         {
             string output = RunPlay(
-                "0", "0",
-                "1", "0",
-                "0", "1",
-                "1", "1",
+                "0", "0", "",
+                "1", "0", "",
+                "0", "1", "",
+                "1", "1", "",
                 "0", "2",
                 "");
 
@@ -359,12 +353,12 @@ namespace Tests
         public void Play_OWinsByMiddleRow_PrintsOWins()
         {
             string output = RunPlay(
-                "0", "0",
-                "1", "0",
-                "0", "1",
-                "1", "1",
-                "2", "2",
-                "1", "2",
+                "0", "0", "",
+                "1", "0", "",
+                "0", "1", "",
+                "1", "1", "",
+                "2", "2", "",
+                "1", "2", "",
                 "");
 
             StringAssert.Contains(output, "Player O wins!");
@@ -375,14 +369,14 @@ namespace Tests
         public void Play_FullBoardWithoutWinner_PrintsDraw()
         {
             string output = RunPlay(
-                "0", "0",
-                "0", "1",
-                "0", "2",
-                "1", "1",
-                "1", "0",
-                "1", "2",
-                "2", "1",
-                "2", "0",
+                "0", "0", "",
+                "0", "1", "",
+                "0", "2", "",
+                "1", "1", "",
+                "1", "0", "",
+                "1", "2", "",
+                "2", "1", "",
+                "2", "0", "",
                 "2", "2",
                 "");
 
@@ -394,12 +388,12 @@ namespace Tests
         public void Play_MoveToOccupiedCell_PrintsMessageAndGameContinues()
         {
             string output = RunPlay(
-                "0", "0",
-                "0", "0",
+                "0", "0", "",
+                "0", "0", 
                 "",
-                "1", "0",
-                "0", "1",
-                "1", "1",
+                "1", "0", "",
+                "0", "1", "",
+                "1", "1", "",
                 "0", "2",
                 "");
 
