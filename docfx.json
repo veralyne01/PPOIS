@@ -21,3 +21,32 @@
     "dest": "_site"
   }
 }
+
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "src": "lab1",
+          "files": ["**/*.csproj"],
+          "exclude": ["**/bin/**", "**/obj/**", "**/*_Tests/**", "**/*Tests*.csproj"]
+        }
+      ],
+      "dest": "api",
+      "includePrivateMembers": true,
+      "disableDefaultFilter": true
+    }
+  ],
+  "build": {
+    "content": [
+      { "files": ["api/**.yml", "api/index.md"] },
+      { "files": ["index.md", "toc.yml"] }
+    ],
+    "dest": "_site",
+    "template": ["default", "modern"],
+    "globalMetadata": {
+      "_appTitle": "PPOIS Lab 1",
+      "_enableSearch": true
+    }
+  }
+}
