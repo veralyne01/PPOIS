@@ -74,5 +74,13 @@ namespace PostMachine
             tape.Clear();
             position = 0;
         }
+
+        /// <summary>Возвращает номера помеченных клеток.</summary>
+        public int[] GetLabels()
+        {
+            var result = new int[tape.Count];
+            tape.CopyTo(result);
+            return result;
+        }
     }
 }

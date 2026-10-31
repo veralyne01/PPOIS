@@ -89,9 +89,9 @@ namespace PostMachine
                             while (!string.IsNullOrWhiteSpace(line = Console.ReadLine()))
                                 lines.Add(line);
 
-                            var machine = new Machine(slider);
-                            machine.Load(ProgramParser.Parse(lines));
-                            machine.Run();
+                            var program = ProgramParser.Parse(lines);
+                            ConsoleVisualizer.Run(slider, program);
+                            Console.WriteLine("Program finished\n");
                             Console.WriteLine("Program finished\n");
                         }
                         catch (Exception e)
