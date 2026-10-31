@@ -240,7 +240,7 @@ jobs:
 
   release:
     name: Publish GitHub Release
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
     needs: test-and-build
     runs-on: ubuntu-latest
 
@@ -257,12 +257,23 @@ jobs:
       - name: Verify executables
         shell: bash
         run: |
-          find artifacts -type f -name '*.exe'
           count=$(find artifacts -type f -name '*.exe' | wc -l)
           test "$count" -ge 1
+
+      - name: Define tag
+        id: tag
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            echo "name=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=v1.0.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.tag.outputs.name }}
+          target_commitish: ${{ github.sha }}
           files: artifacts/**/*.exe
           generate_release_notes: true
