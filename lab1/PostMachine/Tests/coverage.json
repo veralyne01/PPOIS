@@ -1,0 +1,1007 @@
+{
+  "PostMachine.dll": {
+    "D:\\BSUIR projects\\PPOIS_new\\lab1\\PostMachine\\PostMachine\\Command.cs": {
+      "PostMachine.Command": {
+        "PostMachine.CommandType PostMachine.Command::get_Type()": {
+          "Lines": {
+            "10": 101023
+          },
+          "Branches": []
+        },
+        "System.Int32 PostMachine.Command::get_Next()": {
+          "Lines": {
+            "11": 101014
+          },
+          "Branches": []
+        },
+        "System.Int32 PostMachine.Command::get_NextIfMarked()": {
+          "Lines": {
+            "12": 2
+          },
+          "Branches": []
+        },
+        "System.Void PostMachine.Command::.ctor(PostMachine.CommandType,System.Int32,System.Int32)": {
+          "Lines": {
+            "14": 30,
+            "15": 30,
+            "16": 30,
+            "17": 30,
+            "18": 30,
+            "19": 30
+          },
+          "Branches": []
+        }
+      }
+    },
+    "D:\\BSUIR projects\\PPOIS_new\\lab1\\PostMachine\\PostMachine\\InputValidator.cs": {
+      "PostMachine.InputValidator": {
+        "System.Int32 PostMachine.InputValidator::ValidateInt()": {
+          "Lines": {
+            "10": 62,
+            "11": 115,
+            "12": 9,
+            "13": 53
+          },
+          "Branches": [
+            {
+              "Line": 11,
+              "Offset": 13,
+              "EndOffset": 15,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 55
+            },
+            {
+              "Line": 11,
+              "Offset": 13,
+              "EndOffset": 24,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 7
+            },
+            {
+              "Line": 11,
+              "Offset": 27,
+              "EndOffset": 29,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 53
+            },
+            {
+              "Line": 11,
+              "Offset": 27,
+              "EndOffset": 33,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 9
+            }
+          ]
+        }
+      }
+    },
+    "D:\\BSUIR projects\\PPOIS_new\\lab1\\PostMachine\\PostMachine\\Machine.cs": {
+      "PostMachine.Machine": {
+        "System.Int32 PostMachine.Machine::get_CurrentLine()": {
+          "Lines": {
+            "14": 202063
+          },
+          "Branches": []
+        },
+        "System.Boolean PostMachine.Machine::get_IsStopped()": {
+          "Lines": {
+            "15": 101042
+          },
+          "Branches": []
+        },
+        "System.Void PostMachine.Machine::Load(System.Collections.Generic.Dictionary`2<System.Int32,PostMachine.Command>)": {
+          "Lines": {
+            "25": 11,
+            "26": 11,
+            "27": 11,
+            "28": 11,
+            "29": 11
+          },
+          "Branches": []
+        },
+        "System.Boolean PostMachine.Machine::Step()": {
+          "Lines": {
+            "33": 101024,
+            "34": 101025,
+            "36": 101023,
+            "37": 1,
+            "39": 101022,
+            "42": 101005,
+            "43": 101005,
+            "44": 101005,
+            "46": 1,
+            "47": 1,
+            "48": 1,
+            "51": 4,
+            "52": 1,
+            "53": 3,
+            "54": 3,
+            "55": 3,
+            "57": 2,
+            "58": 1,
+            "59": 1,
+            "60": 1,
+            "61": 1,
+            "63": 4,
+            "64": 4,
+            "66": 6,
+            "67": 6,
+            "69": 101014,
+            "70": 101021
+          },
+          "Branches": [
+            {
+              "Line": 34,
+              "Offset": 9,
+              "EndOffset": 11,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 1
+            },
+            {
+              "Line": 34,
+              "Offset": 9,
+              "EndOffset": 18,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 101023
+            },
+            {
+              "Line": 36,
+              "Offset": 42,
+              "EndOffset": 44,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 1
+            },
+            {
+              "Line": 36,
+              "Offset": 42,
+              "EndOffset": 107,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 101022
+            },
+            {
+              "Line": 39,
+              "Offset": 121,
+              "EndOffset": 155,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 101005
+            },
+            {
+              "Line": 39,
+              "Offset": 121,
+              "EndOffset": 186,
+              "Path": 2,
+              "Ordinal": 6,
+              "Hits": 1
+            },
+            {
+              "Line": 39,
+              "Offset": 121,
+              "EndOffset": 217,
+              "Path": 3,
+              "Ordinal": 7,
+              "Hits": 4
+            },
+            {
+              "Line": 51,
+              "Offset": 232,
+              "EndOffset": 234,
+              "Path": 0,
+              "Ordinal": 11,
+              "Hits": 1
+            },
+            {
+              "Line": 51,
+              "Offset": 232,
+              "EndOffset": 297,
+              "Path": 1,
+              "Ordinal": 12,
+              "Hits": 3
+            },
+            {
+              "Line": 39,
+              "Offset": 121,
+              "EndOffset": 327,
+              "Path": 4,
+              "Ordinal": 8,
+              "Hits": 2
+            },
+            {
+              "Line": 57,
+              "Offset": 345,
+              "EndOffset": 347,
+              "Path": 0,
+              "Ordinal": 13,
+              "Hits": 1
+            },
+            {
+              "Line": 57,
+              "Offset": 345,
+              "EndOffset": 410,
+              "Path": 1,
+              "Ordinal": 14,
+              "Hits": 1
+            },
+            {
+              "Line": 39,
+              "Offset": 121,
+              "EndOffset": 437,
+              "Path": 5,
+              "Ordinal": 9,
+              "Hits": 4
+            },
+            {
+              "Line": 63,
+              "Offset": 449,
+              "EndOffset": 451,
+              "Path": 0,
+              "Ordinal": 15,
+              "Hits": 3
+            },
+            {
+              "Line": 63,
+              "Offset": 449,
+              "EndOffset": 459,
+              "Path": 1,
+              "Ordinal": 16,
+              "Hits": 1
+            },
+            {
+              "Line": 39,
+              "Offset": 121,
+              "EndOffset": 473,
+              "Path": 6,
+              "Ordinal": 10,
+              "Hits": 6
+            },
+            {
+              "Line": 39,
+              "Offset": 121,
+              "EndOffset": 485,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 101014
+            }
+          ]
+        },
+        "System.Void PostMachine.Machine::Run(System.Int32)": {
+          "Lines": {
+            "74": 10,
+            "75": 10,
+            "76": 101022,
+            "77": 101014,
+            "78": 101014,
+            "79": 2,
+            "80": 101012,
+            "81": 5
+          },
+          "Branches": [
+            {
+              "Line": 76,
+              "Offset": 41,
+              "EndOffset": 5,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 101014
+            },
+            {
+              "Line": 78,
+              "Offset": 19,
+              "EndOffset": 21,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 2
+            },
+            {
+              "Line": 78,
+              "Offset": 19,
+              "EndOffset": 32,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 101012
+            },
+            {
+              "Line": 76,
+              "Offset": 41,
+              "EndOffset": 43,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 5
+            }
+          ]
+        },
+        "System.Void PostMachine.Machine::.ctor(PostMachine.Slider,System.Int32)": {
+          "Lines": {
+            "11": 12,
+            "17": 12,
+            "18": 12,
+            "19": 12,
+            "20": 12,
+            "21": 12,
+            "22": 12
+          },
+          "Branches": []
+        }
+      }
+    },
+    "D:\\BSUIR projects\\PPOIS_new\\lab1\\PostMachine\\PostMachine\\Program.cs": {
+      "PostMachine.Program": {
+        "System.Void PostMachine.Program::Main(System.String[])": {
+          "Lines": {
+            "10": 17,
+            "12": 17,
+            "13": 17,
+            "15": 45,
+            "16": 45,
+            "17": 45,
+            "18": 45,
+            "20": 45,
+            "21": 45,
+            "22": 44,
+            "23": 1,
+            "24": 1,
+            "25": 1,
+            "26": 1,
+            "27": 1,
+            "28": 45,
+            "31": 5,
+            "32": 5,
+            "34": 2,
+            "35": 2,
+            "38": 3,
+            "39": 3,
+            "40": 2,
+            "41": 2,
+            "42": 1,
+            "43": 1,
+            "44": 1,
+            "45": 1,
+            "46": 1,
+            "47": 3,
+            "50": 5,
+            "51": 5,
+            "52": 4,
+            "53": 4,
+            "54": 1,
+            "55": 1,
+            "56": 1,
+            "57": 1,
+            "58": 1,
+            "59": 5,
+            "61": 1,
+            "62": 1,
+            "64": 7,
+            "65": 2,
+            "66": 2,
+            "67": 2,
+            "68": 2,
+            "70": 5,
+            "71": 5,
+            "72": 5,
+            "73": 5,
+            "74": 7,
+            "77": 3,
+            "78": 3,
+            "79": 3,
+            "81": 10,
+            "82": 7,
+            "84": 3,
+            "85": 3,
+            "86": 2,
+            "87": 1,
+            "88": 1,
+            "89": 2,
+            "90": 2,
+            "91": 2,
+            "92": 2,
+            "93": 3,
+            "94": 3,
+            "96": 19,
+            "98": 45,
+            "99": 90,
+            "100": 17,
+            "101": 17
+          },
+          "Branches": [
+            {
+              "Line": 99,
+              "Offset": 537,
+              "EndOffset": 18,
+              "Path": 1,
+              "Ordinal": 15,
+              "Hits": 28
+            },
+            {
+              "Line": 28,
+              "Offset": 138,
+              "EndOffset": 176,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 5
+            },
+            {
+              "Line": 28,
+              "Offset": 138,
+              "EndOffset": 188,
+              "Path": 2,
+              "Ordinal": 2,
+              "Hits": 2
+            },
+            {
+              "Line": 28,
+              "Offset": 138,
+              "EndOffset": 200,
+              "Path": 3,
+              "Ordinal": 3,
+              "Hits": 3
+            },
+            {
+              "Line": 28,
+              "Offset": 138,
+              "EndOffset": 251,
+              "Path": 4,
+              "Ordinal": 4,
+              "Hits": 5
+            },
+            {
+              "Line": 28,
+              "Offset": 138,
+              "EndOffset": 302,
+              "Path": 5,
+              "Ordinal": 5,
+              "Hits": 1
+            },
+            {
+              "Line": 28,
+              "Offset": 138,
+              "EndOffset": 314,
+              "Path": 6,
+              "Ordinal": 6,
+              "Hits": 7
+            },
+            {
+              "Line": 64,
+              "Offset": 324,
+              "EndOffset": 326,
+              "Path": 0,
+              "Ordinal": 8,
+              "Hits": 2
+            },
+            {
+              "Line": 64,
+              "Offset": 324,
+              "EndOffset": 347,
+              "Path": 1,
+              "Ordinal": 9,
+              "Hits": 5
+            },
+            {
+              "Line": 28,
+              "Offset": 138,
+              "EndOffset": 371,
+              "Path": 7,
+              "Ordinal": 7,
+              "Hits": 3
+            },
+            {
+              "Line": 81,
+              "Offset": 423,
+              "EndOffset": 393,
+              "Path": 1,
+              "Ordinal": 11,
+              "Hits": 7
+            },
+            {
+              "Line": 81,
+              "Offset": 423,
+              "EndOffset": 425,
+              "Path": 0,
+              "Ordinal": 10,
+              "Hits": 3
+            },
+            {
+              "Line": 28,
+              "Offset": 138,
+              "EndOffset": 505,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 45
+            },
+            {
+              "Line": 98,
+              "Offset": 517,
+              "EndOffset": 519,
+              "Path": 0,
+              "Ordinal": 12,
+              "Hits": 0
+            },
+            {
+              "Line": 98,
+              "Offset": 517,
+              "EndOffset": 525,
+              "Path": 1,
+              "Ordinal": 13,
+              "Hits": 45
+            },
+            {
+              "Line": 99,
+              "Offset": 537,
+              "EndOffset": 544,
+              "Path": 0,
+              "Ordinal": 14,
+              "Hits": 17
+            }
+          ]
+        }
+      }
+    },
+    "D:\\BSUIR projects\\PPOIS_new\\lab1\\PostMachine\\PostMachine\\ProgramParser.cs": {
+      "PostMachine.ProgramParser": {
+        "System.Collections.Generic.Dictionary`2<System.Int32,PostMachine.Command> PostMachine.ProgramParser::Parse(System.Collections.Generic.IEnumerable`1<System.String>)": {
+          "Lines": {
+            "11": 18,
+            "12": 18,
+            "14": 123,
+            "15": 37,
+            "16": 37,
+            "17": 39,
+            "19": 35,
+            "20": 35,
+            "21": 1,
+            "22": 34,
+            "23": 1,
+            "26": 33,
+            "30": 10,
+            "31": 9,
+            "34": 1,
+            "35": 1,
+            "37": 4,
+            "38": 4,
+            "40": 2,
+            "41": 2,
+            "43": 4,
+            "44": 4,
+            "46": 10,
+            "47": 10,
+            "49": 2,
+            "51": 30,
+            "52": 30,
+            "53": 13,
+            "54": 13
+          },
+          "Branches": [
+            {
+              "Line": 14,
+              "Offset": 681,
+              "EndOffset": 20,
+              "Path": 1,
+              "Ordinal": 33,
+              "Hits": 37
+            },
+            {
+              "Line": 17,
+              "Offset": 48,
+              "EndOffset": 55,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 35
+            },
+            {
+              "Line": 20,
+              "Offset": 85,
+              "EndOffset": 87,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 35
+            },
+            {
+              "Line": 20,
+              "Offset": 98,
+              "EndOffset": 100,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 34
+            },
+            {
+              "Line": 20,
+              "Offset": 85,
+              "EndOffset": 107,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 1
+            },
+            {
+              "Line": 20,
+              "Offset": 98,
+              "EndOffset": 107,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 1
+            },
+            {
+              "Line": 20,
+              "Offset": 112,
+              "EndOffset": 114,
+              "Path": 0,
+              "Ordinal": 6,
+              "Hits": 1
+            },
+            {
+              "Line": 20,
+              "Offset": 112,
+              "EndOffset": 136,
+              "Path": 1,
+              "Ordinal": 7,
+              "Hits": 34
+            },
+            {
+              "Line": 22,
+              "Offset": 148,
+              "EndOffset": 150,
+              "Path": 0,
+              "Ordinal": 8,
+              "Hits": 1
+            },
+            {
+              "Line": 22,
+              "Offset": 148,
+              "EndOffset": 209,
+              "Path": 1,
+              "Ordinal": 9,
+              "Hits": 33
+            },
+            {
+              "Line": 26,
+              "Offset": 240,
+              "EndOffset": 242,
+              "Path": 0,
+              "Ordinal": 10,
+              "Hits": 14
+            },
+            {
+              "Line": 26,
+              "Offset": 249,
+              "EndOffset": 251,
+              "Path": 0,
+              "Ordinal": 12,
+              "Hits": 10
+            },
+            {
+              "Line": 26,
+              "Offset": 258,
+              "EndOffset": 265,
+              "Path": 0,
+              "Ordinal": 14,
+              "Hits": 0
+            },
+            {
+              "Line": 26,
+              "Offset": 249,
+              "EndOffset": 282,
+              "Path": 1,
+              "Ordinal": 13,
+              "Hits": 4
+            },
+            {
+              "Line": 26,
+              "Offset": 289,
+              "EndOffset": 296,
+              "Path": 0,
+              "Ordinal": 18,
+              "Hits": 0
+            },
+            {
+              "Line": 26,
+              "Offset": 240,
+              "EndOffset": 310,
+              "Path": 1,
+              "Ordinal": 11,
+              "Hits": 19
+            },
+            {
+              "Line": 26,
+              "Offset": 317,
+              "EndOffset": 319,
+              "Path": 0,
+              "Ordinal": 22,
+              "Hits": 5
+            },
+            {
+              "Line": 26,
+              "Offset": 326,
+              "EndOffset": 330,
+              "Path": 0,
+              "Ordinal": 24,
+              "Hits": 4
+            },
+            {
+              "Line": 26,
+              "Offset": 317,
+              "EndOffset": 344,
+              "Path": 1,
+              "Ordinal": 23,
+              "Hits": 14
+            },
+            {
+              "Line": 26,
+              "Offset": 351,
+              "EndOffset": 355,
+              "Path": 0,
+              "Ordinal": 28,
+              "Hits": 4
+            },
+            {
+              "Line": 26,
+              "Offset": 351,
+              "EndOffset": 369,
+              "Path": 1,
+              "Ordinal": 29,
+              "Hits": 10
+            },
+            {
+              "Line": 26,
+              "Offset": 303,
+              "EndOffset": 391,
+              "Path": 1,
+              "Ordinal": 21,
+              "Hits": 0
+            },
+            {
+              "Line": 26,
+              "Offset": 326,
+              "EndOffset": 410,
+              "Path": 1,
+              "Ordinal": 25,
+              "Hits": 1
+            },
+            {
+              "Line": 26,
+              "Offset": 272,
+              "EndOffset": 429,
+              "Path": 1,
+              "Ordinal": 17,
+              "Hits": 0
+            },
+            {
+              "Line": 26,
+              "Offset": 337,
+              "EndOffset": 448,
+              "Path": 1,
+              "Ordinal": 27,
+              "Hits": 4
+            },
+            {
+              "Line": 26,
+              "Offset": 362,
+              "EndOffset": 467,
+              "Path": 1,
+              "Ordinal": 31,
+              "Hits": 2
+            },
+            {
+              "Line": 26,
+              "Offset": 289,
+              "EndOffset": 486,
+              "Path": 1,
+              "Ordinal": 19,
+              "Hits": 4
+            },
+            {
+              "Line": 26,
+              "Offset": 258,
+              "EndOffset": 505,
+              "Path": 1,
+              "Ordinal": 15,
+              "Hits": 10
+            },
+            {
+              "Line": 26,
+              "Offset": 272,
+              "EndOffset": 641,
+              "Path": 0,
+              "Ordinal": 16,
+              "Hits": 2
+            },
+            {
+              "Line": 26,
+              "Offset": 303,
+              "EndOffset": 641,
+              "Path": 0,
+              "Ordinal": 20,
+              "Hits": 2
+            },
+            {
+              "Line": 26,
+              "Offset": 337,
+              "EndOffset": 641,
+              "Path": 0,
+              "Ordinal": 26,
+              "Hits": 2
+            },
+            {
+              "Line": 26,
+              "Offset": 362,
+              "EndOffset": 641,
+              "Path": 0,
+              "Ordinal": 30,
+              "Hits": 2
+            },
+            {
+              "Line": 17,
+              "Offset": 48,
+              "EndOffset": 675,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 50
+            },
+            {
+              "Line": 14,
+              "Offset": 681,
+              "EndOffset": 686,
+              "Path": 0,
+              "Ordinal": 32,
+              "Hits": 13
+            }
+          ]
+        },
+        "System.Int32 PostMachine.ProgramParser::Arg(System.String[],System.Int32,System.String)": {
+          "Lines": {
+            "57": 25,
+            "58": 25,
+            "59": 1,
+            "60": 24,
+            "61": 24
+          },
+          "Branches": [
+            {
+              "Line": 58,
+              "Offset": 5,
+              "EndOffset": 7,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 24
+            },
+            {
+              "Line": 58,
+              "Offset": 17,
+              "EndOffset": 19,
+              "Path": 0,
+              "Ordinal": 2,
+              "Hits": 24
+            },
+            {
+              "Line": 58,
+              "Offset": 5,
+              "EndOffset": 25,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 1
+            },
+            {
+              "Line": 58,
+              "Offset": 17,
+              "EndOffset": 25,
+              "Path": 1,
+              "Ordinal": 3,
+              "Hits": 1
+            },
+            {
+              "Line": 58,
+              "Offset": 28,
+              "EndOffset": 30,
+              "Path": 0,
+              "Ordinal": 4,
+              "Hits": 1
+            },
+            {
+              "Line": 58,
+              "Offset": 28,
+              "EndOffset": 52,
+              "Path": 1,
+              "Ordinal": 5,
+              "Hits": 24
+            }
+          ]
+        }
+      }
+    },
+    "D:\\BSUIR projects\\PPOIS_new\\lab1\\PostMachine\\PostMachine\\Slider.cs": {
+      "PostMachine.Slider": {
+        "System.Int32 PostMachine.Slider::get_Position()": {
+          "Lines": {
+            "12": 222
+          },
+          "Branches": []
+        },
+        "System.Void PostMachine.Slider::set_Position(System.Int32)": {
+          "Lines": {
+            "13": 0
+          },
+          "Branches": []
+        },
+        "System.Void PostMachine.Slider::MakeLabel()": {
+          "Lines": {
+            "17": 76,
+            "18": 76,
+            "19": 76
+          },
+          "Branches": []
+        },
+        "System.Void PostMachine.Slider::RemoveLabel()": {
+          "Lines": {
+            "21": 18,
+            "22": 18,
+            "23": 18
+          },
+          "Branches": []
+        },
+        "System.Void PostMachine.Slider::MoveRight(System.Int32)": {
+          "Lines": {
+            "25": 101178,
+            "26": 101178,
+            "27": 101178
+          },
+          "Branches": []
+        },
+        "System.Void PostMachine.Slider::MoveLeft(System.Int32)": {
+          "Lines": {
+            "29": 42,
+            "30": 42,
+            "31": 42
+          },
+          "Branches": []
+        },
+        "System.Boolean PostMachine.Slider::CheckCell()": {
+          "Lines": {
+            "33": 139,
+            "34": 236,
+            "35": 42,
+            "36": 139
+          },
+          "Branches": [
+            {
+              "Line": 34,
+              "Offset": 20,
+              "EndOffset": 22,
+              "Path": 0,
+              "Ordinal": 0,
+              "Hits": 97
+            },
+            {
+              "Line": 34,
+              "Offset": 20,
+              "EndOffset": 26,
+              "Path": 1,
+              "Ordinal": 1,
+              "Hits": 42
+            }
+          ]
+        },
+        "System.Void PostMachine.Slider::Reset()": {
+          "Lines": {
+            "38": 5,
+            "39": 5,
+            "40": 5,
+            "41": 5
+          },
+          "Branches": []
+        },
+        "System.Void PostMachine.Slider::.ctor()": {
+          "Lines": {
+            "9": 54,
+            "15": 54
+          },
+          "Branches": []
+        }
+      }
+    }
+  }
+}

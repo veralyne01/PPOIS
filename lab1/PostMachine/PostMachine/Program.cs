@@ -1,9 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace PostMachine
 {
+    /// <summary>
+    /// Точка входа консольного имитатора машины Поста.
+    /// </summary>
     public class Program
     {
+        /// <summary>
+        /// Запускает главное меню: принимает команды пользователя
+        /// (метки, сдвиги каретки, новая лента, проверка клетки, ввод программы)
+        /// и выполняет их, пока не выбран пункт выхода (8).
+        /// </summary>
+        /// <param name="args">Аргументы командной строки (не используются).</param>
         public static void Main(string[] args)
         {
             int input;
@@ -13,7 +23,7 @@ namespace PostMachine
             {
                 input = 0;
                 Console.WriteLine($"CURRENT POSITION: {slider.Position}\n" +
-                    "Choose the command:\n1. New label \n2. Remove label \n3. Move left \n4. Move right \n5. New tape \n6. Check cell \n7. Exit");
+                    "Choose the command:\n1. New label \n2. Remove label \n3. Move left \n4. Move right \n5. New tape \n6. Check cell \n7. Enter program \n8. Exit");
                 try
                 {
                     input = InputValidator.ValidateInt();
@@ -70,11 +80,31 @@ namespace PostMachine
                             Console.ReadLine();
                         }
                         break;
+                    case 7:
+                        try
+                        {
+                            Console.WriteLine("Enter program lines (empty line to finish):");
+                            var lines = new List<string>();
+                            string? line;
+                            while (!string.IsNullOrWhiteSpace(line = Console.ReadLine()))
+                                lines.Add(line);
+
+                            var machine = new Machine(slider);
+                            machine.Load(ProgramParser.Parse(lines));
+                            machine.Run();
+                            Console.WriteLine("Program finished\n");
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+                        }
+                        Console.ReadLine();
+                        break;
                     default:
                         break;
                 }
                 if (!(Console.IsOutputRedirected)) Console.Clear();
-            } while (input != 7);
+            } while (input != 8);
             return;
         }
     }

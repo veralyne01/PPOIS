@@ -9,6 +9,10 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="10.1.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.msbuild" Version="10.1.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -16,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PostMachine\PostMachine.csproj" />
+    <ProjectReference Include="..\Tic-Tac-Toe\Tic-Tac-Toe.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,14 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Runtime.CompilerServices;
-[assembly: InternalsVisibleTo("Tests")]
+[assembly: InternalsVisibleTo("TicTacToe_Tests")]
 
 namespace TicTacToe
 {
-    class Start
+    /// <summary>
+    /// Точка входа консольной игры «Крестики-нолики».
+    /// </summary>
+    internal class Start
     {
-        private static void Main(string[] args)
+        /// <summary>
+        /// Создаёт партию и запускает игровой цикл.
+        /// </summary>
+        /// <param name="args">Аргументы командной строки (не используются).</param>
+        internal static void Main(string[] args)
         {
             Gameplay game = new Gameplay();
             game.Play();

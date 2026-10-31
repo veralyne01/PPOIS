@@ -4,7 +4,7 @@ using System.IO;
 using System.Numerics;
 using TicTacToe;
 
-namespace Tests
+namespace TicTacToe_Tests
 {
     [DoNotParallelize]
     [TestClass]

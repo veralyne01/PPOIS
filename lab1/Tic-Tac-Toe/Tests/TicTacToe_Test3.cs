@@ -5,7 +5,7 @@ using System.Numerics;
 using System.Reflection;
 using TicTacToe;
 
-namespace Tests
+namespace TicTacToe_Tests
 {
     [TestClass]
     [DoNotParallelize]
