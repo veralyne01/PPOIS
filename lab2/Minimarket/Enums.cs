@@ -71,4 +71,10 @@ namespace Minimarket
         OneHundrendDollars,
         TwoHundredDollars
     }
+
+    enum SupplyOperations
+    {
+        WriteOff,
+        Arrival
+    }
 }

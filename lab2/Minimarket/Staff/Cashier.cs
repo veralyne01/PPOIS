@@ -1,0 +1,12 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Minimarket
+{ 
+
+    class Cashier : Employee
+    {
+        CashRegister cashRegister;
+    }
+}
