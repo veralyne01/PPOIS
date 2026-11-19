@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Minimarket
 {
-    class Payment
+    public abstract class Payment
     {
         int id;
         Purchase purchase;

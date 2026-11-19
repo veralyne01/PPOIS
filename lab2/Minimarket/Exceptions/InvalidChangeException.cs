@@ -4,8 +4,12 @@ using System.Text;
 
 namespace Minimarket
 {
-    class InvalidChangeException
+    class InvalidChangeException : Exception
     {
+        public InvalidChangeException()
+        : base("Not enough money for change!")
+        {
 
+        }
     }
 }

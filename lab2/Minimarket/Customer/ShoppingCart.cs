@@ -6,8 +6,23 @@ namespace Minimarket
 {
     class ShoppingCart
     {
-        int id;
-        Customer customer;
-        List<CartItem>? productList;
+        private int id;
+        private Customer customer;
+        private static int nextCartId = 0;
+        ShoppingCart(Customer customer)
+        {
+            this.customer = customer;
+            id = ++nextCartId;
+        }
+        List<CartItem>? productList; 
+        public int CalculateSum()
+        {
+            int sum = 0;
+            foreach(var product in productList)
+            {
+                sum += product.totalSum;
+            }
+            return sum;
+        }
     }
 }

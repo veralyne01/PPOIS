@@ -55,23 +55,22 @@ namespace Minimarket
         Accrual
     }
 
-    enum Nominals
+    public enum Nominals
     {
-        OnePound,
-        TwoPounds,
-        FivePounds,
-        TenPounds,
-        TwentyPounds,
-        FiftyPounds,
-        OneDollar,
-        FiveDollars,
-        TenDollars,
-        TwentyDollars,
-        FiftyDollars,
-        OneHundrendDollars,
-        TwoHundredDollars
+        OnePound = 1,
+        TwoPounds = 2,
+        FivePounds = 5,
+        TenPounds = 10,
+        TwentyPounds = 20,
+        FiftyPounds = 50,
+        OneDollar = 100,
+        FiveDollars = 500,
+        TenDollars = 1000,
+        TwentyDollars = 2000,
+        FiftyDollars = 5000,
+        OneHundrendDollars = 10000,
+        TwoHundredDollars = 20000
     }
-
     enum SupplyOperations
     {
         WriteOff,

@@ -4,9 +4,16 @@ using System.Text;
 
 namespace Minimarket
 {
-    class Employee
+    public abstract class Employee
     {
-        int id;
-        string name;
+        public int Id { get; }
+        private static int nextEmployeeId = 500;
+        public string Name { get; }
+
+        protected Employee(string name)
+        {
+            Id = ++nextEmployeeId;
+            Name = name;
+        }
     }
 }

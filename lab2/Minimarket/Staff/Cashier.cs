@@ -5,8 +5,11 @@ using System.Text;
 namespace Minimarket
 { 
 
-    class Cashier : Employee
+    public class Cashier : Employee
     {
-        CashRegister cashRegister;
+        public Cashier(string name)
+        : base(name)
+        {
+        }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Minimarket.Staff;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,5 +11,6 @@ namespace Minimarket
         Cashier cashier;
         DateOnly date;
         List<PurchaseItem> items;
+
     }
 }

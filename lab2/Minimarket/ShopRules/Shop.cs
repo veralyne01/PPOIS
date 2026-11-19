@@ -1,23 +1,83 @@
-﻿using Minimarket.Staff;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Minimarket
 {
-    class Shop
+    public class Shop
     {
-        int id;
-        List<Employee> employees;
-        CashRegister[] cashRegisters = new CashRegister[4];
+        private readonly List<Department> departments = new();
+        private readonly List<Employee> employees = new();
+        private readonly List<CashRegister> cashRegisters = new();
+
+        private bool isOpen = false;
+
+        public IReadOnlyList<Department> Departments => departments;
+        public IReadOnlyList<Employee> Employees => employees;
+        public IReadOnlyList<CashRegister> CashRegisters => cashRegisters;
+
+        public bool IsOpen => isOpen;
+
         public Shop()
         {
-            employees = new List<Employee>();
+            CreateDepartments();
+            CreateCashiers();
+            CreateSpecialists();
+        }
 
-            for (int i = 0; i < cashRegisters.Length; i++)
+        private void CreateDepartments()
+        {
+            string[] departmentNames =
             {
-                cashRegisters[i] = new CashRegister();
+                "Dairy",
+                "Meat and fish",
+                "Bread and cereal",
+                "Fruit and vegetables",
+                "Sweets"
+            };
+
+            foreach (string name in departmentNames)
+            {
+                departments.Add(new Department(name));
             }
+        }
+
+        private void CreateCashiers()
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                Cashier cashier = new Cashier(
+                    i + 1,
+                    $"Cashier {i + 1}"
+                );
+
+                CashRegister register = new CashRegister(i + 1);
+
+                register.AssignCashier(cashier);
+
+                employees.Add(cashier);
+                cashRegisters.Add(register);
+            }
+        }
+
+        private void CreateSpecialists()
+        {
+            employees.Add(new InventoryManager("Inventory Manager"));
+            employees.Add(new ReturnManager("Return Manager"));
+        }
+
+        public void Open()
+        {
+            if (isOpen)
+                throw new ShopAlreadyOpenedException();
+
+            foreach (CashRegister register in cashRegisters)
+            {
+                register.Open();
+            }
+
+            isOpen = true;
+
+            Console.WriteLine("Shop successfully opened!");
         }
     }
 }

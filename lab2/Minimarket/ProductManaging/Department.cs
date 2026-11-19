@@ -4,10 +4,21 @@ using System.Text;
 
 namespace Minimarket
 {
-    class Department
+    public class Department
     {
-        int id;
-        string name;
-        string? description;
+        private int id;
+        private static int nextDepId = 100;
+        private string name;
+        private Shelf[] shelves;
+        public Department(string name)
+        {
+            this.name = name;
+            id = ++nextDepId;
+            shelves = new Shelf[5];
+            for (int i = 1; i <= shelves.Length; i++)
+            {
+                shelves[i].number = i;
+            }
+        } 
     }
 }

@@ -7,9 +7,9 @@ namespace Minimarket
 {
     class Product : Item
     {
-        double price;
+        public int price;
         int barcode;
-        void ChangePrice(double price)
+        void ChangePrice(int price)
         {
             this.price = price;
         }

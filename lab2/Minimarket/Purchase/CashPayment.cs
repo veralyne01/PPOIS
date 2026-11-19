@@ -4,9 +4,13 @@ using System.Text;
 
 namespace Minimarket
 {
-    class CashPayment : Payment
+    public class CashPayment : Payment
     {
-        double receivedSum;
-        double change;
+        public int receivedSum;
+        public int change;
+        public CashPayment(int receivedSum)
+        {
+            this.receivedSum = receivedSum;
+        }
     }
 }
