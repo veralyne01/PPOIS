@@ -8,12 +8,14 @@ namespace Minimarket
         private readonly List<Department> departments = new();
         private readonly List<Employee> employees = new();
         private readonly List<CashRegister> cashRegisters = new();
+        private readonly List<Customer> customers = new();
 
         private bool isOpen = false;
 
         public IReadOnlyList<Department> Departments => departments;
         public IReadOnlyList<Employee> Employees => employees;
         public IReadOnlyList<CashRegister> CashRegisters => cashRegisters;
+        public IReadOnlyList<Customer> Customers => customers;
 
         public bool IsOpen => isOpen;
 
@@ -46,11 +48,10 @@ namespace Minimarket
             for (int i = 0; i < 4; i++)
             {
                 Cashier cashier = new Cashier(
-                    i + 1,
                     $"Cashier {i + 1}"
                 );
 
-                CashRegister register = new CashRegister(i + 1);
+                CashRegister register = new CashRegister();
 
                 register.AssignCashier(cashier);
 
@@ -63,6 +64,11 @@ namespace Minimarket
         {
             employees.Add(new InventoryManager("Inventory Manager"));
             employees.Add(new ReturnManager("Return Manager"));
+        }
+
+        public void AddCustomer(Customer customer)
+        {
+            customers.Add(customer);
         }
 
         public void Open()

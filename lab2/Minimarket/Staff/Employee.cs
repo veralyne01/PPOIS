@@ -6,13 +6,13 @@ namespace Minimarket
 {
     public abstract class Employee
     {
-        public int Id { get; }
-        private static int nextEmployeeId = 500;
+        public int number { get; }
         public string Name { get; }
+        private static int nextEmployeeNumber = 600;
 
         protected Employee(string name)
         {
-            Id = ++nextEmployeeId;
+            number = ++nextEmployeeNumber;
             Name = name;
         }
     }

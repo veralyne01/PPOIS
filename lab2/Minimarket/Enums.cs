@@ -76,4 +76,32 @@ namespace Minimarket
         WriteOff,
         Arrival
     }
+
+    public enum Status
+    {
+        LookingForProducts,
+        InLineAtCheckout,
+        Paying
+    }
+
+    enum CustomerName
+    {
+        Alexander, Maria, Dmitry, Anna, Sergey,
+        Elena, Ivan, Olga, Andrey, Natalia,
+        Pavel, Tatiana, Nikolai, Irina, Vladimir,
+        Svetlana, Mikhail, Ekaterina, Artem, Yulia,
+        Maxim, Victoria, Denis, Alina, Kirill,
+        Daria, Egor, Polina, Vitaly, Margarita,
+        Oleg, Ksenia, Roman, Valeria, Stanislav,
+        Alexandra, Yaroslav, Veronika, Gleb, Sofia
+    }
+
+    static class RandomHelper
+    {
+        public static T GetRandom<T>() where T : struct, Enum
+        {
+            T[] values = Enum.GetValues<T>();
+            return values[Random.Shared.Next(values.Length)];
+        }
+    }
 }

@@ -6,16 +6,28 @@ namespace Minimarket
 {
     class PhoneNumber
     {
-        string belCode = "+375";
-        string opCode;
-        string number;
-        bool ValidateNumber()
+        private const int belCode = 375;
+        private int opCode;
+        private int number;
+        private bool ValidateNumber()
         {
-
+            ValidateCode();
+            int digits = number.ToString().Length;
+            if (digits > 7 || number < 0) throw new InvalidPhoneNumberException();
+            return true;
         }
-        bool ValidateCode()
+        private bool ValidateCode()
         {
+            int[] codes = { 25, 29, 33, 44 };
+            if (codes.Contains(opCode)) return true;
+            throw new InvalidPhoneNumberException();
+        }
 
+        PhoneNumber(int opCode, int number)
+        {
+            this.opCode = opCode;
+            this.number = number;
+            ValidateNumber();
         }
     }
 }

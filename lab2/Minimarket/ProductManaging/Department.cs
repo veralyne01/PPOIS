@@ -15,8 +15,9 @@ namespace Minimarket
             this.name = name;
             id = ++nextDepId;
             shelves = new Shelf[5];
-            for (int i = 1; i <= shelves.Length; i++)
+            for (int i = 0; i < shelves.Length; i++)
             {
+                shelves[i] = new Shelf();
                 shelves[i].number = i;
             }
         } 

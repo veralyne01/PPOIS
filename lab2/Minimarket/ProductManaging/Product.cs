@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Minimarket
 {
-    class Product : Item
+    public class Product : Item
     {
         public int price;
         int barcode;

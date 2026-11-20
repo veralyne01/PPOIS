@@ -6,8 +6,10 @@ namespace Minimarket
 {
     class InventoryCheckItem
     {
-        ProductBatch batch;
-        int expectedAmount;
+        
+        int maxAmount;
         int actualAmount;
+        
+        Location location;
     }
 }

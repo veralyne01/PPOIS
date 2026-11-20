@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Minimarket
 {
-    class Item
+    public class Item
     {
         string name;
         ProductCategory category;

@@ -4,11 +4,19 @@ using System.Text;
 
 namespace Minimarket
 {
-    class Customer
+    public class Customer
     {
-        int id;
-        string name;
+        public int id { get; private set; }
+        private static int nextCustomerId = 1000;
+        public string name;
         PhoneNumber number;
         DateOnly dateOfRegistration;
+        public Status status { get; private set; }
+        public Customer(string name)
+        {
+            id = ++nextCustomerId;
+            this.name = name;
+            status = Status.LookingForProducts;
+        }
     }
 }

@@ -10,7 +10,7 @@ namespace Minimarket
         private static int nextShelfId = 200;
         public int number;
         private int capacity = 50;
-        Shelf()
+        public Shelf()
         {
             id = ++nextShelfId;
         }
