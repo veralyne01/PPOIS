@@ -10,5 +10,9 @@ namespace Minimarket
         : base(name)
         {
         }
+        public void InnventoryCheck(ProductCatalog catalog)
+        {
+
+        }
     }
 }

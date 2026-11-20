@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Minimarket
+﻿namespace Minimarket
 {
-    class ProductCategory
+    public class ProductCategory
     {
-        int id;
-        string categoryName;
-        string? categoryDescription;
-        ProductCategory? parent;
+        public string CategoryName { get; }
+
+        public ProductCategory(string categoryName)
+        {
+            CategoryName = categoryName;
+        }
     }
 }

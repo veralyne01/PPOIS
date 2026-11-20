@@ -4,8 +4,12 @@ using System.Text;
 
 namespace Minimarket
 {
-    class InsufficientStockException
+    public class InsufficientStockException : Exception
     {
+        public InsufficientStockException()
+            : base("Not enough products!")
+        {
 
+        }
     }
 }

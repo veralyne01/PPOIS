@@ -1,13 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Minimarket
+﻿namespace Minimarket
 {
-    class Manufacturer
+    public class Manufacturer
     {
-        int id;
-        string manufacturerName;
-        Country country;
+        public string ManufacturerName { get; }
+        public Country country { get; }
+
+        public Manufacturer(
+            string name,
+            Country country)
+        {
+            ManufacturerName = name;
+            this.country = country;
+        }
     }
 }

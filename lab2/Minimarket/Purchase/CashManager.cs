@@ -59,7 +59,7 @@ namespace Minimarket {
             if (change == 0)
                 return result;
 
-            // Доступные купюры от крупных к мелким
+           
             var available = dict
                 .Where(p => p.Value > 0)
                 .OrderByDescending(p => (int)p.Key)

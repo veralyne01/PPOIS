@@ -4,8 +4,12 @@ using System.Text;
 
 namespace Minimarket
 {
-    class InvalidProductDataException
+    public class InvalidProductDataException : Exception
     {
+        public InvalidProductDataException()
+            : base("Invalid product data!")
+        {
 
+        }
     }
 }

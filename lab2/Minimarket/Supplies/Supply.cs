@@ -1,16 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Minimarket
+﻿namespace Minimarket
 {
-    class Supply
+    public class Supply
     {
-        int id;
-        Supplier supplier;
-        DateOnly date;
-        List<Product> products;
-        double averageSum;
-        bool status;
+        public int id { get; }
+        public Supplier supplier { get; }
+        public DateOnly date { get; }
+
+        private readonly List<ProductBatch> batches = new();
+
+        public IReadOnlyList<ProductBatch> Batches => batches;
+
+        public Supply(int id, Supplier supplier, DateOnly date)
+        {
+            this.id = id;
+            this.supplier = supplier;
+            this.date = date;
+        }
+
+        public void AddBatch(ProductBatch batch)
+        {
+            if (batch == null)
+                throw new ArgumentNullException(nameof(batch));
+
+            batches.Add(batch);
+        }
     }
-}
+}

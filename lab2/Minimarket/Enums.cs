@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Minimarket
 {
-    enum Country
+    public enum Country
     {
         Belarus,
         Russia,
@@ -49,7 +49,7 @@ namespace Minimarket
         Malaysia
     }
 
-    enum OperationType
+    public enum OperationType
     {
         Purchase,
         Accrual

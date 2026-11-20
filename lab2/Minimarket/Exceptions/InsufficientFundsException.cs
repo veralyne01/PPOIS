@@ -11,5 +11,11 @@ namespace Minimarket
         {
 
         }
+
+        public InsufficientFundsException(string message)
+            : base(message)
+        {
+
+        }
     }
 }

@@ -6,10 +6,19 @@ namespace Minimarket
 {
     public abstract class Payment
     {
-        int id;
-        Purchase purchase;
-        double sum;
-        DateOnly date;
-        bool status;
+        private static int nextPaymentId = 0;
+        public int id { get; }
+        public int sum { get; }
+        public DateOnly date { get; }
+        public bool status { get; }
+        public abstract string method { get; }
+
+        protected Payment(int sum)
+        {
+            id = ++nextPaymentId;
+            this.sum = sum;
+            date = DateOnly.FromDateTime(DateTime.Today);
+            status = true;
+        }
     }
 }

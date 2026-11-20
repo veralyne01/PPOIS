@@ -1,13 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Minimarket
+﻿namespace Minimarket
 {
     public class Item
     {
-        string name;
-        ProductCategory category;
-        Manufacturer manufacturer;
+        public string Name { get; }
+        public ProductCategory category { get; }
+        public Manufacturer manufacturer { get; }
+
+        protected Item(
+            string name,
+            ProductCategory category,
+            Manufacturer manufacturer)
+        {
+            Name = name;
+            this.category = category;
+            this.manufacturer = manufacturer;
+        }
     }
-}
+}

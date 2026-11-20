@@ -1,14 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Minimarket
+﻿namespace Minimarket
 {
-    class Supplier
+    public class Supplier
     {
-        int id;
-        string name;
-        PhoneNumber number;
-        List<Item> items;
+        public string name { get; }
+
+        private readonly List<Supply> supplies = new();
+
+        public IReadOnlyList<Supply> Supplies => supplies;
+
+        public Supplier(string name)
+        {
+            this.name = name;
+        }
+
+        public void AddSupply(Supply supply)
+        {
+            if (supply.supplier != this)
+                throw new ArgumentException(
+                    "Supply belongs to another supplier!");
+
+            supplies.Add(supply);
+        }
     }
 }

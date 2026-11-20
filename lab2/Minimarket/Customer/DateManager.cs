@@ -11,7 +11,11 @@ namespace Minimarket
         public static DateOnly GenerateRandomDate()
         {
             int daysPassed = Random.Shared.Next(0, 6167);
-            DateOnly date = todayDate.AddDays(daysPassed);
+            DateOnly date = minDate.AddDays(daysPassed);
+            if (date >  todayDate)
+            {
+                throw new Exception("Invalid date!");
+            }
             return date;
         }
     }
