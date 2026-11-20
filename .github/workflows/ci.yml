@@ -1,4 +1,3 @@
-```yaml
 name: C# CI/CD
 
 on:
@@ -27,17 +26,10 @@ jobs:
         with:
           dotnet-version: "10.0.401"
 
-      # =====================================================
-      # FIND PROJECTS IN LAB1 AND LAB2
-      # =====================================================
-
       - name: Find C# projects
         shell: bash
         run: |
-          find lab1 lab2 -type f -name '*.csproj' \
-            -not -path '*/bin/*' \
-            -not -path '*/obj/*' \
-            -not -path '*/.vs/*' | sort > projects.txt
+          find lab1 lab2 -type f -name '*.csproj' -not -path '*/bin/*' -not -path '*/obj/*' -not -path '*/.vs/*' | sort > projects.txt
 
           if [ ! -s projects.txt ]; then
             echo "::error::No .csproj files found"
@@ -48,9 +40,7 @@ jobs:
           : > apps.txt
 
           while IFS= read -r project; do
-            if grep -qiE \
-              'Microsoft\.NET\.Test\.Sdk|Microsoft\.Testing\.Platform|xunit|MSTest|NUnit|TestingPlatformDotnetTestSupport|UseMicrosoftTestingPlatformRunner|IsTestProject' \
-              "$project"; then
+            if grep -qiE 'Microsoft[.]NET[.]Test[.]Sdk|Microsoft[.]Testing[.]Platform|xunit|MSTest|NUnit|TestingPlatformDotnetTestSupport|UseMicrosoftTestingPlatformRunner|IsTestProject' "$project"; then
               echo "$project" >> tests.txt
             else
               echo "$project" >> apps.txt
@@ -84,10 +74,6 @@ jobs:
             echo "Restoring $project"
             dotnet restore "$project"
           done < projects.txt
-
-      # =====================================================
-      # TESTS AND CODE COVERAGE
-      # =====================================================
 
       - name: Run tests and check coverage threshold
         shell: bash
@@ -215,10 +201,6 @@ jobs:
 
           exit "$failed"
 
-      # =====================================================
-      # COVERAGE REPORT
-      # =====================================================
-
       - name: Coverage summary
         if: always()
         shell: bash
@@ -243,10 +225,6 @@ jobs:
 
           cat CoverageReport/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
 
-      # =====================================================
-      # CODE FORMATTING
-      # =====================================================
-
       - name: Check code formatting
         shell: bash
         run: |
@@ -258,10 +236,6 @@ jobs:
               --verbosity diagnostic
 
           done < projects.txt
-
-      # =====================================================
-      # STATIC ANALYSIS
-      # =====================================================
 
       - name: Run static analysis
         shell: bash
@@ -277,10 +251,6 @@ jobs:
 
           done < projects.txt
 
-      # =====================================================
-      # BUILD
-      # =====================================================
-
       - name: Build all projects
         shell: bash
         run: |
@@ -292,10 +262,6 @@ jobs:
               --no-restore
 
           done < projects.txt
-
-      # =====================================================
-      # PUBLISH APPLICATIONS
-      # =====================================================
 
       - name: Publish applications
         shell: bash
@@ -314,10 +280,6 @@ jobs:
               --output "./artifacts/$name"
 
           done < apps.txt
-
-      # =====================================================
-      # UPLOAD ARTIFACTS
-      # =====================================================
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -341,10 +303,6 @@ jobs:
           name: coverage-html
           path: CoverageReport/
           if-no-files-found: warn
-
-  # =======================================================
-  # DOCUMENTATION
-  # =======================================================
 
   docs:
     name: Build and deploy documentation
@@ -402,10 +360,6 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-  # =======================================================
-  # GITHUB RELEASE
-  # =======================================================
-
   release:
     name: Publish GitHub Release
 
@@ -458,4 +412,3 @@ jobs:
           target_commitish: ${{ github.sha }}
           files: artifacts/**/*.exe
           generate_release_notes: true
-```
