@@ -7,11 +7,9 @@ namespace Minimarket
     class ShoppingCart
     {
         private int id;
-        private Customer customer;
         private static int nextCartId = 0;
-        ShoppingCart(Customer customer)
+        ShoppingCart()
         {
-            this.customer = customer;
             id = ++nextCartId;
         }
         List<CartItem>? productList; 

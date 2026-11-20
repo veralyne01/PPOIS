@@ -4,8 +4,12 @@ using System.Text;
 
 namespace Minimarket
 {
-    class InsufficientFundsException
+    public class InsufficientFundsException : Exception
     {
+        public InsufficientFundsException()
+            : base("The customer has nothing to pay with!")
+        {
 
+        }
     }
 }

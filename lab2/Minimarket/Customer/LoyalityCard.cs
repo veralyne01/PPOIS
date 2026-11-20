@@ -4,11 +4,13 @@ using System.Text;
 
 namespace Minimarket
 {
-    class LoyalityCard
+    public class LoyalityCard : Card
     {
-        int number;
-        Customer owner;
-        double bonuses;
-        DateOnly dateOfRegistration;
+        public int bonuses { get; set; }
+        public LoyalityCard()
+            :base()
+        {
+            bonuses = Random.Shared.Next(0, 100);
+        }
     }
 }

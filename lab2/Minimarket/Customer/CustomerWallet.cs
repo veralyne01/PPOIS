@@ -4,10 +4,9 @@ using System.Text;
 
 namespace Minimarket
 {
-    class CustomerWallet
+    public class CustomerWallet
     {
-        Customer owner;
-        int sum;
-        Dictionary<Nominals, int> nominals;
+        public int sum { get; private set; }
+        public Dictionary<Nominals, int> nominals { get; private set; } = new Dictionary<Nominals, int>();
     }
 }

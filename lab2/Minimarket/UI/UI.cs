@@ -50,6 +50,9 @@ static class UI
                 case "2":
                     CustomerMenu(shop);
                     break;
+                case "4":
+                    ShowStaff(shop);
+                    break;
                 case "7":
                     return;
                 default:
@@ -87,10 +90,20 @@ static class UI
     }
     static void ShowCustomers(Shop shop)
     {
-        Console.WriteLine("Id\t\tName\t\tStatus\n");
         foreach (var customer in shop.Customers)
         {
-            Console.WriteLine($"{customer.id}\t\t{customer.name}\t\t{customer.status}");
+            Console.WriteLine($"Name:\t{customer.name}");
+            Console.WriteLine($"Id:\t{customer.id}");
+            if (customer.hasBankCard)
+            {
+                Console.WriteLine($"Bank card: {customer.card.number}, date of registration: {customer.card.dateOfRegistration}, sum: {customer.card.money}");
+            }
+            if (customer.hasWallet)
+            {
+                Console.WriteLine($"Amount in cash: {customer.wallet.sum}\t");
+            }
+            Console.WriteLine($"Loyality card: {customer.loyalityCard.number}, date of registration: {customer.loyalityCard.dateOfRegistration}, bonuses: {customer.loyalityCard.bonuses}");
+            Console.WriteLine("\n***\n");
         }
     }
 
@@ -110,4 +123,17 @@ static class UI
         Customer customer = new Customer(name);
         shop.AddCustomer(customer);
     } 
+
+    private static void ShowStaff(Shop shop)
+    {
+        Console.Clear();
+        Console.WriteLine("Employee\t\tNumber\n");
+        foreach (var employee in shop.Employees)
+        {
+            Console.WriteLine($"{employee.Name}\t\t{employee.number}");
+        }
+        Console.WriteLine("\nPress any button to continue");
+        Console.ReadLine();
+        Menu(shop);
+    }
 }
