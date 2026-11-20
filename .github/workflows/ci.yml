@@ -1,3 +1,4 @@
+```yaml
 name: C# CI/CD
 
 on:
@@ -26,12 +27,17 @@ jobs:
         with:
           dotnet-version: "10.0.401"
 
+      # =====================================================
+      # FIND PROJECTS IN LAB1 AND LAB2
+      # =====================================================
+
       - name: Find C# projects
         shell: bash
         run: |
-          find lab1 -type f -name '*.csproj' \
+          find lab1 lab2 -type f -name '*.csproj' \
             -not -path '*/bin/*' \
-            -not -path '*/obj/*' | sort > projects.txt
+            -not -path '*/obj/*' \
+            -not -path '*/.vs/*' | sort > projects.txt
 
           if [ ! -s projects.txt ]; then
             echo "::error::No .csproj files found"
@@ -40,32 +46,48 @@ jobs:
 
           : > tests.txt
           : > apps.txt
+
           while IFS= read -r project; do
-            if grep -qE "Microsoft.NET.Test.Sdk|MSTest" "$project"; then
+            if grep -qiE \
+              'Microsoft\.NET\.Test\.Sdk|Microsoft\.Testing\.Platform|xunit|MSTest|NUnit|TestingPlatformDotnetTestSupport|UseMicrosoftTestingPlatformRunner|IsTestProject' \
+              "$project"; then
               echo "$project" >> tests.txt
             else
               echo "$project" >> apps.txt
             fi
           done < projects.txt
 
-          echo "Test projects:"; cat tests.txt
-          echo "App projects:"; cat apps.txt
+          echo "Test projects:"
+          cat tests.txt
+
+          echo "Application projects:"
+          cat apps.txt
 
           if [ ! -s tests.txt ]; then
             echo "::error::No test projects found"
             exit 1
           fi
+
           if [ ! -s apps.txt ]; then
-            echo "::error::No app projects found"
+            echo "::error::No application projects found"
             exit 1
           fi
+
+      # =====================================================
+      # RESTORE
+      # =====================================================
 
       - name: Restore all projects
         shell: bash
         run: |
           while IFS= read -r project; do
+            echo "Restoring $project"
             dotnet restore "$project"
           done < projects.txt
+
+      # =====================================================
+      # TESTS AND CODE COVERAGE
+      # =====================================================
 
       - name: Run tests and check coverage threshold
         shell: bash
@@ -73,89 +95,216 @@ jobs:
           threshold=90
           failed=0
 
+          mkdir -p TestResults
+
           while IFS= read -r project; do
-            name=$(basename "$project" .csproj)
-            outdir="./TestResults/$name"
-            echo "Testing $project ($name)"
+            project_dir=$(dirname "$project")
+            project_file=$(basename "$project")
 
-            dotnet test "$project" \
-              --configuration Release \
-              --no-restore \
-              --collect:"XPlat Code Coverage" \
-              --results-directory "$outdir" < /dev/null || failed=1
+            name="${project%.csproj}"
+            safe_name=$(echo "$name" | tr '/ ' '__')
 
-            file=$(find "$outdir" -name coverage.cobertura.xml | head -n 1)
+            outdir="$GITHUB_WORKSPACE/TestResults/$safe_name"
+
+            mkdir -p "$outdir"
+
+            echo "========================================"
+            echo "Testing: $project"
+            echo "========================================"
+
+            # Detect Microsoft Testing Platform.
+            mtp=false
+
+            if grep -qiE \
+              'Microsoft\.Testing\.Platform|xunit\.v3\.mtp|UseMicrosoftTestingPlatformRunner|TestingPlatformDotnetTestSupport' \
+              "$project"; then
+              mtp=true
+            else
+              # Also check global.json in the project directory
+              # and all its parent directories.
+              search_dir="$project_dir"
+
+              while true; do
+                if [ -f "$search_dir/global.json" ] &&
+                   grep -qE \
+                     '"runner"[[:space:]]*:[[:space:]]*"Microsoft\.Testing\.Platform"' \
+                     "$search_dir/global.json"; then
+                  mtp=true
+                  break
+                fi
+
+                if [ "$search_dir" = "." ] ||
+                   [ "$search_dir" = "$GITHUB_WORKSPACE" ]; then
+                  break
+                fi
+
+                parent_dir=$(dirname "$search_dir")
+
+                if [ "$parent_dir" = "$search_dir" ]; then
+                  break
+                fi
+
+                search_dir="$parent_dir"
+              done
+            fi
+
+            # Run MTP or VSTest depending on the project.
+            if [ "$mtp" = true ]; then
+              echo "Test runner: Microsoft Testing Platform"
+
+              (
+                cd "$project_dir"
+
+                dotnet test \
+                  --project "./$project_file" \
+                  --configuration Release \
+                  --no-restore \
+                  --results-directory "$outdir" \
+                  --coverlet \
+                  --coverlet-output-format cobertura
+              ) || failed=1
+
+            else
+              echo "Test runner: VSTest"
+
+              (
+                cd "$project_dir"
+
+                dotnet test "./$project_file" \
+                  --configuration Release \
+                  --no-restore \
+                  --collect:"XPlat Code Coverage" \
+                  --results-directory "$outdir"
+              ) || failed=1
+            fi
+
+            # Find Cobertura report from either runner.
+            file=$(find "$outdir" -type f \
+              \( -name 'coverage.cobertura.xml' \
+              -o -name 'coverage.cobertura.*.xml' \) \
+              -print -quit)
+
             if [ -z "$file" ]; then
-              echo "::error::No coverage file for $name"
+              echo "::error::No coverage file found for $project"
               failed=1
               continue
             fi
 
-            rate=$(grep -o -m1 'line-rate="[0-9.]*"' "$file" | head -n 1 | cut -d'"' -f2)
-            percent=$(awk -v r="$rate" 'BEGIN { printf "%.2f", r * 100 }')
-            echo "Line coverage for $name: $percent% (required: $threshold%)"
+            rate=$(grep -o -m1 'line-rate="[0-9.]*"' "$file" \
+              | cut -d'"' -f2)
 
-            if awk -v p="$percent" -v t="$threshold" 'BEGIN { exit !(p < t) }'; then
-              echo "::error::Coverage of $name is $percent%, below $threshold%"
+            if [ -z "$rate" ]; then
+              echo "::error::Cannot read coverage rate for $project"
+              failed=1
+              continue
+            fi
+
+            percent=$(awk -v r="$rate" \
+              'BEGIN { printf "%.2f", r * 100 }')
+
+            echo "Line coverage: $percent%"
+            echo "Required coverage: $threshold%"
+
+            if awk -v p="$percent" -v t="$threshold" \
+              'BEGIN { exit !(p < t) }'; then
+              echo "::error::Coverage of $project is $percent%, below $threshold%"
               failed=1
             fi
+
           done < tests.txt
 
           exit "$failed"
+
+      # =====================================================
+      # COVERAGE REPORT
+      # =====================================================
 
       - name: Coverage summary
         if: always()
         shell: bash
         run: |
-          if ! find TestResults -name coverage.cobertura.xml 2>/dev/null | grep -q .; then
+          if ! find TestResults -type f \
+            \( -name 'coverage.cobertura.xml' \
+            -o -name 'coverage.cobertura.*.xml' \) \
+            | grep -q .; then
             echo "No coverage files, skipping report"
             exit 0
           fi
+
           dotnet tool install --global dotnet-reportgenerator-globaltool
+
+          export PATH="$PATH:$HOME/.dotnet/tools"
+
           reportgenerator \
-            -reports:"TestResults/**/coverage.cobertura.xml" \
+            -reports:"TestResults/**/coverage.cobertura*.xml" \
             -targetdir:CoverageReport \
             -reporttypes:"MarkdownSummaryGithub;Html" \
-            -assemblyfilters:"-*_Tests"
+            -assemblyfilters:"-*_Tests;-*.Tests"
+
           cat CoverageReport/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
+
+      # =====================================================
+      # CODE FORMATTING
+      # =====================================================
 
       - name: Check code formatting
         shell: bash
         run: |
           while IFS= read -r project; do
             echo "Checking formatting: $project"
+
             dotnet format whitespace "$project" \
               --verify-no-changes \
               --verbosity diagnostic
+
           done < projects.txt
+
+      # =====================================================
+      # STATIC ANALYSIS
+      # =====================================================
 
       - name: Run static analysis
         shell: bash
         run: |
           while IFS= read -r project; do
             echo "Analyzing: $project"
+
             dotnet format analyzers "$project" \
               --verify-no-changes \
               --no-restore \
               --severity error \
               --verbosity diagnostic
+
           done < projects.txt
+
+      # =====================================================
+      # BUILD
+      # =====================================================
 
       - name: Build all projects
         shell: bash
         run: |
           while IFS= read -r project; do
+            echo "Building: $project"
+
             dotnet build "$project" \
               --configuration Release \
               --no-restore
+
           done < projects.txt
+
+      # =====================================================
+      # PUBLISH APPLICATIONS
+      # =====================================================
 
       - name: Publish applications
         shell: bash
         run: |
           while IFS= read -r project; do
             name=$(basename "$project" .csproj)
+
             echo "Publishing $name"
+
             dotnet publish "$project" \
               --configuration Release \
               --runtime win-x64 \
@@ -163,7 +312,12 @@ jobs:
               -p:PublishSingleFile=true \
               -p:IncludeNativeLibrariesForSelfExtract=true \
               --output "./artifacts/$name"
+
           done < apps.txt
+
+      # =====================================================
+      # UPLOAD ARTIFACTS
+      # =====================================================
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -172,21 +326,25 @@ jobs:
           path: artifacts/
           if-no-files-found: error
 
-      - name: Upload coverage xml
+      - name: Upload coverage XML
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: code-coverage
-          path: TestResults/**/coverage.cobertura.xml
+          path: TestResults/**/*.xml
           if-no-files-found: warn
 
-      - name: Upload coverage html
+      - name: Upload coverage HTML
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-html
           path: CoverageReport/
           if-no-files-found: warn
+
+  # =======================================================
+  # DOCUMENTATION
+  # =======================================================
 
   docs:
     name: Build and deploy documentation
@@ -215,18 +373,24 @@ jobs:
         with:
           dotnet-version: "10.0.401"
 
-      - name: Restore projects
+      - name: Restore projects from both labs
         shell: bash
         run: |
-          find lab1 -type f -name '*.csproj' \
-            -not -path '*/bin/*' -not -path '*/obj/*' | while IFS= read -r project; do
+          find lab1 lab2 -type f -name '*.csproj' \
+            -not -path '*/bin/*' \
+            -not -path '*/obj/*' | sort | while IFS= read -r project; do
+
+            echo "Restoring: $project"
             dotnet restore "$project"
+
           done
 
       - name: Build documentation site
         shell: bash
         run: |
           dotnet tool install --global docfx
+          export PATH="$PATH:$HOME/.dotnet/tools"
+
           docfx docfx.json
 
       - name: Upload site
@@ -238,14 +402,21 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
+  # =======================================================
+  # GITHUB RELEASE
+  # =======================================================
+
   release:
     name: Publish GitHub Release
+
     if: |
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'push' &&
        (github.ref == 'refs/heads/main' ||
         startsWith(github.ref, 'refs/tags/v')))
+
     needs: test-and-build
+
     runs-on: ubuntu-latest
 
     permissions:
@@ -262,7 +433,13 @@ jobs:
         shell: bash
         run: |
           count=$(find artifacts -type f -name '*.exe' | wc -l)
-          test "$count" -ge 1
+
+          echo "Found executables: $count"
+
+          if [ "$count" -lt 1 ]; then
+            echo "::error::No executable files found"
+            exit 1
+          fi
 
       - name: Define tag
         id: tag
@@ -281,3 +458,4 @@ jobs:
           target_commitish: ${{ github.sha }}
           files: artifacts/**/*.exe
           generate_release_notes: true
+```
