@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Minimarket
+﻿namespace Minimarket
 {
     public class Warehouse
     {
@@ -71,7 +67,7 @@ namespace Minimarket
                 .Sum(batch => batch.quantity);
         }
 
-   
+
         public int RemoveExpiredBatches(DateOnly currentDate)
         {
             List<ProductBatch> expired = batches

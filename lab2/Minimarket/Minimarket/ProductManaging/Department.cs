@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Minimarket
+﻿namespace Minimarket
 {
     public class Department
     {

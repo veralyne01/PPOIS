@@ -2,7 +2,7 @@
 {
     class Minimarket
     {
-        static void Main(string[] args) 
+        static void Main(string[] args)
         {
             UI.StartMenu();
         }

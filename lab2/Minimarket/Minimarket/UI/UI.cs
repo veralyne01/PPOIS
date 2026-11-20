@@ -1,6 +1,4 @@
 using Minimarket;
-using System.Security.Cryptography;
-using System.IO;
 
 static class UI
 {
@@ -17,19 +15,19 @@ static class UI
         }
         catch (IOException)
         {
-            
+
         }
         catch (InvalidOperationException)
         {
-           
+
         }
         catch (PlatformNotSupportedException)
         {
-         
+
         }
         catch (System.ComponentModel.Win32Exception)
         {
-           
+
         }
     }
 

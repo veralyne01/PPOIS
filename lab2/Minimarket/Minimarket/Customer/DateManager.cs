@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Minimarket
+﻿namespace Minimarket
 {
     public class DateManager
     {
@@ -12,7 +8,7 @@ namespace Minimarket
         {
             int daysPassed = Random.Shared.Next(0, 6167);
             DateOnly date = minDate.AddDays(daysPassed);
-            if (date >  todayDate)
+            if (date > todayDate)
             {
                 throw new Exception("Invalid date!");
             }

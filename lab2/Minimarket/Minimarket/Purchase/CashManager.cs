@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Minimarket { 
+﻿namespace Minimarket
+{
     static public class CashManager
     {
 
@@ -59,7 +56,7 @@ namespace Minimarket {
             if (change == 0)
                 return result;
 
-           
+
             var available = dict
                 .Where(p => p.Value > 0)
                 .OrderByDescending(p => (int)p.Key)

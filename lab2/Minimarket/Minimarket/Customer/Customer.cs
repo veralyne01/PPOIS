@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Minimarket
 {
     public class Customer
@@ -39,7 +35,7 @@ namespace Minimarket
             cart = new ShoppingCart();
             timer = Random.Shared.Next(1, 4);
             loyalityCard = new();
-            int randomizer = Random.Shared.Next(0,3);
+            int randomizer = Random.Shared.Next(0, 3);
             switch (randomizer)
             {
                 case 0:

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Minimarket
+﻿namespace Minimarket
 {
     public class ShoppingCart
     {
@@ -32,7 +28,7 @@ namespace Minimarket
         public int CalculateSum()
         {
             int sum = 0;
-            foreach(var product in productList)
+            foreach (var product in productList)
             {
                 sum += product.totalSum;
             }

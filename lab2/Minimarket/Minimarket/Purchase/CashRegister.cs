@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-
 namespace Minimarket
 {
     public class CashRegister
@@ -15,12 +9,12 @@ namespace Minimarket
         private Dictionary<Nominals, int> nominals;
         private readonly DiscountCalculator discountCalculator;
 
-  
+
         private readonly Queue<Customer> queue = new();
         private Customer? currentCustomer = null;
         private int paymentTimer;
 
-      
+
         private readonly List<Purchase> purchases = new();
 
         public int Id => id;
@@ -97,7 +91,7 @@ namespace Minimarket
                 {
                     return null;
                 }
-             
+
                 currentCustomer = queue.Dequeue();
                 currentCustomer.SetStatus(Status.Paying);
                 paymentTimer = Random.Shared.Next(1, 4);
@@ -172,7 +166,7 @@ namespace Minimarket
                 }
             }
 
-      
+
             int bonusesAccrued = 0;
             if (loyalityCard != null)
             {
@@ -209,12 +203,12 @@ namespace Minimarket
 
         private Payment PayByCash(Customer customer, int sum)
         {
-         
+
             Dictionary<Nominals, int> given = customer.wallet!.PickNominals(sum);
             int givenSum = (int)CashManager.Sum(given);
             int change = givenSum - sum;
 
-       
+
             foreach (var pair in given)
             {
                 CashManager.Add(nominals, pair.Key, pair.Value);

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Minimarket
+﻿namespace Minimarket
 {
     public class LoyalityCard : Card
     {
@@ -11,7 +7,7 @@ namespace Minimarket
         public IReadOnlyList<BonusTransaction> Transactions => transactions;
 
         public LoyalityCard()
-            :base()
+            : base()
         {
             bonuses = Random.Shared.Next(0, 100);
         }
