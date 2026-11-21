@@ -8,16 +8,118 @@ on:
     tags:
       - "lab1-v*"
       - "lab2-v*"
+
   pull_request:
+
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  test-and-build:
-    name: Test, analyze and build
+
+  # =====================================================
+  # DETECT CHANGED LABS
+  # =====================================================
+
+  detect:
+    name: Detect changed laboratories
     runs-on: ubuntu-latest
+
+    outputs:
+      labs: ${{ steps.detect.outputs.labs }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect laboratories
+        id: detect
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          GITHUB_REF: ${{ github.ref }}
+          BEFORE_SHA: ${{ github.event.before }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          labs=()
+
+          # A release tag selects exactly one laboratory.
+          if [[ "$GITHUB_REF" == refs/tags/lab1-v* ]]; then
+            labs=("lab1")
+
+          elif [[ "$GITHUB_REF" == refs/tags/lab2-v* ]]; then
+            labs=("lab2")
+
+          # Manual run builds both laboratories.
+          elif [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            labs=("lab1" "lab2")
+
+          else
+            if [[ "$EVENT_NAME" == "pull_request" ]]; then
+              BASE_SHA="$PR_BASE_SHA"
+            else
+              BASE_SHA="$BEFORE_SHA"
+            fi
+
+            # If the previous commit is unavailable,
+            # build both laboratories to be safe.
+            if [[ -z "$BASE_SHA" ]] ||
+               [[ "$BASE_SHA" =~ ^0+$ ]] ||
+               ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
+
+              echo "Base commit unavailable. Building both laboratories."
+              labs=("lab1" "lab2")
+
+            else
+              echo "Changed files:"
+              git diff --name-only "$BASE_SHA" "$HEAD_SHA"
+
+              while IFS= read -r file; do
+                case "$file" in
+                  lab1/*)
+                    if [[ ! " ${labs[*]} " =~ " lab1 " ]]; then
+                      labs+=("lab1")
+                    fi
+                    ;;
+                  lab2/*)
+                    if [[ ! " ${labs[*]} " =~ " lab2 " ]]; then
+                      labs+=("lab2")
+                    fi
+                    ;;
+                esac
+              done < <(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+            fi
+          fi
+
+          if [[ ${#labs[@]} -eq 0 ]]; then
+            echo "No laboratory changes detected."
+            echo 'labs=[]' >> "$GITHUB_OUTPUT"
+          else
+            json=$(printf '%s\n' "${labs[@]}" | jq -R . | jq -sc .)
+            echo "Selected laboratories: $json"
+            echo "labs=$json" >> "$GITHUB_OUTPUT"
+          fi
+
+  # =====================================================
+  # TEST, ANALYZE, BUILD AND PUBLISH
+  # =====================================================
+
+  build:
+    name: Build ${{ matrix.lab }}
+    runs-on: ubuntu-latest
+
+    needs: detect
+
+    if: needs.detect.outputs.labs != '[]'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        lab: ${{ fromJSON(needs.detect.outputs.labs) }}
 
     steps:
       - name: Checkout repository
@@ -28,63 +130,43 @@ jobs:
         with:
           dotnet-version: "10.0.401"
 
-      - name: Select laboratories
-        shell: bash
-        run: |
-          if [[ "$GITHUB_REF" == refs/tags/lab1-v* ]] ||
-             [[ "$GITHUB_REF" == refs/heads/lab1 ]]; then
-            echo "lab1" > labs.txt
+      # =================================================
+      # FIND PROJECTS
+      # =================================================
 
-          elif [[ "$GITHUB_REF" == refs/tags/lab2-v* ]] ||
-               [[ "$GITHUB_REF" == refs/heads/lab2 ]]; then
-            echo "lab2" > labs.txt
-
-          else
-            printf "lab1\nlab2\n" > labs.txt
-          fi
-
-          echo "Selected laboratories:"
-          cat labs.txt
-          
       - name: Find C# projects
         shell: bash
+        env:
+          LAB: ${{ matrix.lab }}
         run: |
-          : > projects.txt
-          : > tests.txt
-          : > apps.txt
-
-          while IFS= read -r lab; do
-            if [ ! -d "$lab" ]; then
-              echo "::error::Directory $lab not found"
-              exit 1
-            fi
-
-            find "$lab" -type f -name '*.csproj' \
-              -not -path '*/bin/*' \
-              -not -path '*/obj/*' \
-              -not -path '*/.vs/*' \
-              >> projects.txt
-
-          done < labs.txt
-
-          sort -o projects.txt projects.txt
+          find "$LAB" \
+            -type f \
+            -name '*.csproj' \
+            -not -path '*/bin/*' \
+            -not -path '*/obj/*' \
+            -not -path '*/.vs/*' \
+            | sort > projects.txt
 
           if [ ! -s projects.txt ]; then
-            echo "::error::No .csproj files found"
+            echo "::error::No C# projects found in $LAB"
             exit 1
           fi
+
+          : > tests.txt
+          : > apps.txt
 
           while IFS= read -r project; do
             if grep -qiE \
               'Microsoft[.]NET[.]Test[.]Sdk|Microsoft[.]Testing[.]Platform|xunit|MSTest|NUnit|TestingPlatformDotnetTestSupport|UseMicrosoftTestingPlatformRunner|IsTestProject' \
               "$project"; then
+
               echo "$project" >> tests.txt
             else
               echo "$project" >> apps.txt
             fi
           done < projects.txt
 
-          echo "All projects:"
+          echo "Projects:"
           cat projects.txt
 
           echo "Test projects:"
@@ -94,22 +176,30 @@ jobs:
           cat apps.txt
 
           if [ ! -s tests.txt ]; then
-            echo "::error::No test projects found"
+            echo "::error::No test projects found in $LAB"
             exit 1
           fi
 
           if [ ! -s apps.txt ]; then
-            echo "::error::No application projects found"
+            echo "::error::No application projects found in $LAB"
             exit 1
           fi
+
+      # =================================================
+      # RESTORE
+      # =================================================
 
       - name: Restore projects
         shell: bash
         run: |
           while IFS= read -r project; do
-            echo "Restoring $project"
+            echo "Restoring: $project"
             dotnet restore "$project"
           done < projects.txt
+
+      # =================================================
+      # TESTS AND COVERAGE
+      # =================================================
 
       - name: Run tests and check coverage threshold
         shell: bash
@@ -127,6 +217,7 @@ jobs:
             safe_name=$(echo "$name" | tr '/ ' '__')
 
             outdir="$GITHUB_WORKSPACE/TestResults/$safe_name"
+
             mkdir -p "$outdir"
 
             echo "========================================"
@@ -137,8 +228,9 @@ jobs:
             mtp=false
 
             if grep -qiE \
-              'Microsoft[.]Testing[.]Platform|xunit[.]v3[.]mtp|UseMicrosoftTestingPlatformRunner|TestingPlatformDotnetTestSupport' \
+              'Microsoft\.Testing\.Platform|xunit\.v3\.mtp|UseMicrosoftTestingPlatformRunner|TestingPlatformDotnetTestSupport' \
               "$project"; then
+
               mtp=true
             else
               search_dir="$project_dir"
@@ -146,8 +238,9 @@ jobs:
               while true; do
                 if [ -f "$search_dir/global.json" ] &&
                    grep -qE \
-                     '"runner"[[:space:]]*:[[:space:]]*"Microsoft[.]Testing[.]Platform"' \
+                     '"runner"[[:space:]]*:[[:space:]]*"Microsoft\.Testing\.Platform"' \
                      "$search_dir/global.json"; then
+
                   mtp=true
                   break
                 fi
@@ -225,6 +318,7 @@ jobs:
 
             if awk -v p="$percent" -v t="$threshold" \
               'BEGIN { exit !(p < t) }'; then
+
               echo "::error::Coverage of $project is $percent%, below $threshold%"
               failed=1
             fi
@@ -232,6 +326,10 @@ jobs:
           done < tests.txt
 
           exit "$failed"
+
+      # =================================================
+      # COVERAGE REPORT
+      # =================================================
 
       - name: Coverage summary
         if: always()
@@ -241,6 +339,7 @@ jobs:
             \( -name 'coverage.cobertura.xml' \
             -o -name 'coverage.cobertura.*.xml' \) \
             | grep -q .; then
+
             echo "No coverage files, skipping report"
             exit 0
           fi
@@ -257,6 +356,10 @@ jobs:
 
           cat CoverageReport/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
 
+      # =================================================
+      # FORMATTING
+      # =================================================
+
       - name: Check code formatting
         shell: bash
         run: |
@@ -268,6 +371,10 @@ jobs:
               --verbosity diagnostic
 
           done < projects.txt
+
+      # =================================================
+      # STATIC ANALYSIS
+      # =================================================
 
       - name: Run static analysis
         shell: bash
@@ -282,7 +389,11 @@ jobs:
               --verbosity diagnostic
 
           done < projects.txt
-          
+
+      # =================================================
+      # BUILD
+      # =================================================
+
       - name: Build projects
         shell: bash
         run: |
@@ -295,14 +406,17 @@ jobs:
 
           done < projects.txt
 
+      # =================================================
+      # PUBLISH
+      # =================================================
+
       - name: Publish applications
         shell: bash
         run: |
           while IFS= read -r project; do
-            lab=$(echo "$project" | cut -d'/' -f1)
             name=$(basename "$project" .csproj)
 
-            echo "Publishing $lab / $name"
+            echo "Publishing $name"
 
             dotnet publish "$project" \
               --configuration Release \
@@ -310,57 +424,26 @@ jobs:
               --self-contained true \
               -p:PublishSingleFile=true \
               -p:IncludeNativeLibrariesForSelfExtract=true \
-              --output "./artifacts/$lab/$name"
+              --output "./artifacts/$name"
 
           done < apps.txt
-          
-      - name: Prepare release packages
-        if: startsWith(github.ref, 'refs/tags/lab1-v') || startsWith(github.ref, 'refs/tags/lab2-v')
-        shell: bash
-        run: |
-          if [[ "$GITHUB_REF" == refs/tags/lab1-v* ]]; then
-            lab="lab1"
-          elif [[ "$GITHUB_REF" == refs/tags/lab2-v* ]]; then
-            lab="lab2"
-          else
-            echo "::error::Unknown release tag"
-            exit 1
-          fi
 
-          mkdir -p release-assets
-
-          if [ ! -d "artifacts/$lab" ]; then
-            echo "::error::No published artifacts found for $lab"
-            exit 1
-          fi
-
-          (
-            cd artifacts
-            zip -qr "../release-assets/${lab}-win-x64.zip" "$lab"
-          )
-
-          ls -lh release-assets
+      # =================================================
+      # UPLOAD ARTIFACTS
+      # =================================================
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: labs-build
+          name: ${{ matrix.lab }}-build
           path: artifacts/
-          if-no-files-found: error
-
-      - name: Upload release packages
-        if: startsWith(github.ref, 'refs/tags/lab1-v') || startsWith(github.ref, 'refs/tags/lab2-v')
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-assets
-          path: release-assets/
           if-no-files-found: error
 
       - name: Upload coverage XML
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: code-coverage
+          name: ${{ matrix.lab }}-coverage
           path: TestResults/**/*.xml
           if-no-files-found: warn
 
@@ -368,14 +451,21 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-html
+          name: ${{ matrix.lab }}-coverage-html
           path: CoverageReport/
           if-no-files-found: warn
 
+  # =====================================================
+  # DOCUMENTATION
+  # =====================================================
 
   docs:
     name: Build and deploy documentation
-    if: github.event_name != 'pull_request'
+
+    if: |
+      (github.event_name == 'push' &&
+       github.ref == 'refs/heads/main') ||
+      github.event_name == 'workflow_dispatch'
 
     runs-on: ubuntu-latest
 
@@ -401,7 +491,7 @@ jobs:
         with:
           dotnet-version: "10.0.401"
 
-      - name: Restore projects
+      - name: Restore projects from both labs
         shell: bash
         run: |
           find lab1 lab2 -type f -name '*.csproj' \
@@ -431,15 +521,19 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
+  # =====================================================
+  # GITHUB RELEASE
+  # =====================================================
+
   release:
-    name: Publish laboratory release
+    name: Publish ${{ startsWith(github.ref, 'refs/tags/lab1-') && 'Lab1' || 'Lab2' }} Release
 
     if: |
       github.event_name == 'push' &&
       (startsWith(github.ref, 'refs/tags/lab1-v') ||
        startsWith(github.ref, 'refs/tags/lab2-v'))
 
-    needs: test-and-build
+    needs: build
 
     runs-on: ubuntu-latest
 
@@ -447,18 +541,23 @@ jobs:
       contents: write
 
     steps:
-      - name: Download release packages
+      - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: release-assets
-          path: release-assets/
+          name: ${{ startsWith(github.ref, 'refs/tags/lab1-') && 'lab1-build' || 'lab2-build' }}
+          path: artifacts/
 
-      - name: Verify release package
+      - name: Verify executables
         shell: bash
         run: |
-          if [ ! -f release-assets/lab2-win-x64.zip ] && \
-             [ ! -f release-assets/lab1-win-x64.zip ]; then
-            echo "::error::No release package found"
+          echo "Found executables:"
+
+          find artifacts -type f -name '*.exe' -print
+
+          count=$(find artifacts -type f -name '*.exe' | wc -l)
+
+          if [ "$count" -lt 1 ]; then
+            echo "::error::No executable files found"
             exit 1
           fi
 
@@ -467,5 +566,5 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
-          files: release-assets/*.zip
+          files: artifacts/**/*.exe
           generate_release_notes: true
