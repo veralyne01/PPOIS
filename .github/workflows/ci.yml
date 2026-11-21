@@ -1,3 +1,4 @@
+
 name: C# CI/CD
 
 on:
@@ -5,7 +6,8 @@ on:
     branches:
       - "**"
     tags:
-      - "v*"
+      - "lab1-v*"
+      - "lab2-v*"
   pull_request:
   workflow_dispatch:
 
@@ -26,26 +28,72 @@ jobs:
         with:
           dotnet-version: "10.0.401"
 
+      # =====================================================
+      # SELECT LABORATORIES
+      # =====================================================
+
+      - name: Select laboratories
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/lab1-v* ]] ||
+             [[ "$GITHUB_REF" == refs/heads/lab1 ]]; then
+            echo "lab1" > labs.txt
+
+          elif [[ "$GITHUB_REF" == refs/tags/lab2-v* ]] ||
+               [[ "$GITHUB_REF" == refs/heads/lab2 ]]; then
+            echo "lab2" > labs.txt
+
+          else
+            printf "lab1\nlab2\n" > labs.txt
+          fi
+
+          echo "Selected laboratories:"
+          cat labs.txt
+
+      # =====================================================
+      # PROJECT DISCOVERY
+      # =====================================================
+
       - name: Find C# projects
         shell: bash
         run: |
-          find lab1 lab2 -type f -name '*.csproj' -not -path '*/bin/*' -not -path '*/obj/*' -not -path '*/.vs/*' | sort > projects.txt
+          : > projects.txt
+          : > tests.txt
+          : > apps.txt
+
+          while IFS= read -r lab; do
+            if [ ! -d "$lab" ]; then
+              echo "::error::Directory $lab not found"
+              exit 1
+            fi
+
+            find "$lab" -type f -name '*.csproj' \
+              -not -path '*/bin/*' \
+              -not -path '*/obj/*' \
+              -not -path '*/.vs/*' \
+              >> projects.txt
+
+          done < labs.txt
+
+          sort -o projects.txt projects.txt
 
           if [ ! -s projects.txt ]; then
             echo "::error::No .csproj files found"
             exit 1
           fi
 
-          : > tests.txt
-          : > apps.txt
-
           while IFS= read -r project; do
-            if grep -qiE 'Microsoft[.]NET[.]Test[.]Sdk|Microsoft[.]Testing[.]Platform|xunit|MSTest|NUnit|TestingPlatformDotnetTestSupport|UseMicrosoftTestingPlatformRunner|IsTestProject' "$project"; then
+            if grep -qiE \
+              'Microsoft[.]NET[.]Test[.]Sdk|Microsoft[.]Testing[.]Platform|xunit|MSTest|NUnit|TestingPlatformDotnetTestSupport|UseMicrosoftTestingPlatformRunner|IsTestProject' \
+              "$project"; then
               echo "$project" >> tests.txt
             else
               echo "$project" >> apps.txt
             fi
           done < projects.txt
+
+          echo "All projects:"
+          cat projects.txt
 
           echo "Test projects:"
           cat tests.txt
@@ -67,13 +115,17 @@ jobs:
       # RESTORE
       # =====================================================
 
-      - name: Restore all projects
+      - name: Restore projects
         shell: bash
         run: |
           while IFS= read -r project; do
             echo "Restoring $project"
             dotnet restore "$project"
           done < projects.txt
+
+      # =====================================================
+      # TESTS AND COVERAGE
+      # =====================================================
 
       - name: Run tests and check coverage threshold
         shell: bash
@@ -91,7 +143,6 @@ jobs:
             safe_name=$(echo "$name" | tr '/ ' '__')
 
             outdir="$GITHUB_WORKSPACE/TestResults/$safe_name"
-
             mkdir -p "$outdir"
 
             echo "========================================"
@@ -102,18 +153,16 @@ jobs:
             mtp=false
 
             if grep -qiE \
-              'Microsoft\.Testing\.Platform|xunit\.v3\.mtp|UseMicrosoftTestingPlatformRunner|TestingPlatformDotnetTestSupport' \
+              'Microsoft[.]Testing[.]Platform|xunit[.]v3[.]mtp|UseMicrosoftTestingPlatformRunner|TestingPlatformDotnetTestSupport' \
               "$project"; then
               mtp=true
             else
-              # Also check global.json in the project directory
-              # and all its parent directories.
               search_dir="$project_dir"
 
               while true; do
                 if [ -f "$search_dir/global.json" ] &&
                    grep -qE \
-                     '"runner"[[:space:]]*:[[:space:]]*"Microsoft\.Testing\.Platform"' \
+                     '"runner"[[:space:]]*:[[:space:]]*"Microsoft[.]Testing[.]Platform"' \
                      "$search_dir/global.json"; then
                   mtp=true
                   break
@@ -134,7 +183,6 @@ jobs:
               done
             fi
 
-            # Run MTP or VSTest depending on the project.
             if [ "$mtp" = true ]; then
               echo "Test runner: Microsoft Testing Platform"
 
@@ -164,7 +212,7 @@ jobs:
               ) || failed=1
             fi
 
-            # Find Cobertura report from either runner.
+            # Find Cobertura report.
             file=$(find "$outdir" -type f \
               \( -name 'coverage.cobertura.xml' \
               -o -name 'coverage.cobertura.*.xml' \) \
@@ -225,6 +273,10 @@ jobs:
 
           cat CoverageReport/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
 
+      # =====================================================
+      # FORMATTING
+      # =====================================================
+
       - name: Check code formatting
         shell: bash
         run: |
@@ -236,6 +288,10 @@ jobs:
               --verbosity diagnostic
 
           done < projects.txt
+
+      # =====================================================
+      # STATIC ANALYSIS
+      # =====================================================
 
       - name: Run static analysis
         shell: bash
@@ -251,7 +307,11 @@ jobs:
 
           done < projects.txt
 
-      - name: Build all projects
+      # =====================================================
+      # BUILD
+      # =====================================================
+
+      - name: Build projects
         shell: bash
         run: |
           while IFS= read -r project; do
@@ -263,13 +323,18 @@ jobs:
 
           done < projects.txt
 
+      # =====================================================
+      # PUBLISH
+      # =====================================================
+
       - name: Publish applications
         shell: bash
         run: |
           while IFS= read -r project; do
+            lab=$(echo "$project" | cut -d'/' -f1)
             name=$(basename "$project" .csproj)
 
-            echo "Publishing $name"
+            echo "Publishing $lab / $name"
 
             dotnet publish "$project" \
               --configuration Release \
@@ -277,15 +342,68 @@ jobs:
               --self-contained true \
               -p:PublishSingleFile=true \
               -p:IncludeNativeLibrariesForSelfExtract=true \
-              --output "./artifacts/$name"
+              --output "./artifacts/$lab/$name"
 
           done < apps.txt
+
+      # =====================================================
+      # RELEASE PACKAGES
+      # =====================================================
+
+      - name: Prepare release packages
+        if: startsWith(github.ref, 'refs/tags/lab1-v') || startsWith(github.ref, 'refs/tags/lab2-v')
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/lab1-v* ]]; then
+            lab="lab1"
+          elif [[ "$GITHUB_REF" == refs/tags/lab2-v* ]]; then
+            lab="lab2"
+          else
+            echo "::error::Unknown release tag"
+            exit 1
+          fi
+
+          mkdir -p release-assets
+
+          echo "Preparing release for $lab"
+
+          # Source code of the selected laboratory only.
+          git archive \
+            --format=zip \
+            --output="release-assets/${lab}-source.zip" \
+            HEAD "$lab"
+
+          # Published Windows applications of the selected laboratory.
+          if [ ! -d "artifacts/$lab" ]; then
+            echo "::error::No published artifacts found for $lab"
+            exit 1
+          fi
+
+          (
+            cd artifacts
+            zip -qr "../release-assets/${lab}-win-x64.zip" "$lab"
+          )
+
+          echo "Release files:"
+          ls -lh release-assets
+
+      # =====================================================
+      # ARTIFACTS
+      # =====================================================
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: labs-build
           path: artifacts/
+          if-no-files-found: error
+
+      - name: Upload release packages
+        if: startsWith(github.ref, 'refs/tags/lab1-v') || startsWith(github.ref, 'refs/tags/lab2-v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-assets
+          path: release-assets/
           if-no-files-found: error
 
       - name: Upload coverage XML
@@ -304,9 +422,14 @@ jobs:
           path: CoverageReport/
           if-no-files-found: warn
 
+  # =======================================================
+  # DOCUMENTATION
+  # =======================================================
+
   docs:
     name: Build and deploy documentation
     if: github.event_name != 'pull_request'
+
     runs-on: ubuntu-latest
 
     permissions:
@@ -331,12 +454,13 @@ jobs:
         with:
           dotnet-version: "10.0.401"
 
-      - name: Restore projects from both labs
+      - name: Restore projects
         shell: bash
         run: |
           find lab1 lab2 -type f -name '*.csproj' \
             -not -path '*/bin/*' \
-            -not -path '*/obj/*' | sort | while IFS= read -r project; do
+            -not -path '*/obj/*' \
+            | sort | while IFS= read -r project; do
 
             echo "Restoring: $project"
             dotnet restore "$project"
@@ -360,14 +484,17 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
+  # =======================================================
+  # RELEASE
+  # =======================================================
+
   release:
-    name: Publish GitHub Release
+    name: Publish laboratory release
 
     if: |
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'push' &&
-       (github.ref == 'refs/heads/main' ||
-        startsWith(github.ref, 'refs/tags/v')))
+      github.event_name == 'push' &&
+      (startsWith(github.ref, 'refs/tags/lab1-v') ||
+       startsWith(github.ref, 'refs/tags/lab2-v'))
 
     needs: test-and-build
 
@@ -377,38 +504,29 @@ jobs:
       contents: write
 
     steps:
-      - name: Download build artifacts
+      - name: Download release packages
         uses: actions/download-artifact@v4
         with:
-          name: labs-build
-          path: artifacts/
+          name: release-assets
+          path: release-assets/
 
-      - name: Verify executables
+      - name: Verify release packages
         shell: bash
         run: |
-          count=$(find artifacts -type f -name '*.exe' | wc -l)
+          echo "Release assets:"
+          ls -lh release-assets
 
-          echo "Found executables: $count"
+          count=$(find release-assets -maxdepth 1 -type f -name '*.zip' | wc -l)
 
-          if [ "$count" -lt 1 ]; then
-            echo "::error::No executable files found"
+          if [ "$count" -lt 2 ]; then
+            echo "::error::Expected source and published ZIP archives"
             exit 1
-          fi
-
-      - name: Define tag
-        id: tag
-        shell: bash
-        run: |
-          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
-            echo "name=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
-          else
-            echo "name=v1.0.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.tag.outputs.name }}
-          target_commitish: ${{ github.sha }}
-          files: artifacts/**/*.exe
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          files: release-assets/*.zip
           generate_release_notes: true
