@@ -1,16 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+namespace EcologyProject;
 
-namespace EcologyProject
+public class Lake : NaturalArea
 {
-    public class Lake : NaturalArea
+    public override NaturalAreaType AreaType => NaturalAreaType.Lake;
+
+    public Lake(double size, string name) : base(size, name, new[]
     {
-        private const string[] allowed = { };
-        Lake(double size, string? name, List<string>? allowedOrganisms, List<Organism>? organisms)
-            :base(size, name, allowedOrganisms, organisms)
-        {
-            pollution.Add(PollutionType.Water);
-        }
+        "Бобр", "Выдра", "Ондатра", "Водяная полёвка", "Утка-кряква", "Лебедь-шипун",
+        "Серая цапля", "Поганка", "Камышница", "Щука", "Карась", "Окунь", "Плотва",
+        "Лещ", "Линь", "Карп", "Судак", "Озёрная лягушка", "Прудовая лягушка",
+        "Тритон", "Болотная черепаха", "Уж обыкновенный", "Речной рак", "Прудовик",
+        "Беззубка", "Катушка", "Стрекоза", "Водомерка", "Жук-плавунец", "Комар",
+        "Кувшинка", "Кубышка", "Ряска", "Камыш", "Тростник", "Рогоз", "Спирогира", "Хлорелла"
+    })
+    {
+        Pollution.Add(PollutionType.Water);
+        Pollution.Add(PollutionType.Soil);
     }
 }

@@ -1,38 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace EcologyProject;
 
-namespace EcologyProject
+public class PollutionLevel
 {
-    public class PollutionLevel
+    private readonly Dictionary<PollutionType, double> levels = new();
+
+    public IReadOnlyDictionary<PollutionType, double> Levels => levels;
+
+    public void Add(PollutionType type, double value = 0)
     {
-        private Dictionary<PollutionType, double> levels = new();
+        if (value < 0)
+            throw new ArgumentOutOfRangeException(nameof(value));
 
-        public void Add(PollutionType type, double value = 0)
-        {
-            levels[type] = value;
-        }
-
-        public bool Increase(PollutionType type, double value)
-        {
-            if (!levels.ContainsKey(type))
-                return false;
-
-            levels[type] += value;
-            return true;
-        }
-
-        public double? GetLevel(PollutionType type)
-        {
-            if (!levels.TryGetValue(type, out double value))
-                return null;
-
-            return value;
-        }
-
-        public bool HasParameter(PollutionType type)
-        {
-            return levels.ContainsKey(type);
-        }
+        levels[type] = value;
     }
+
+    public bool Increase(PollutionType type, double value)
+    {
+        if (value < 0)
+            throw new ArgumentOutOfRangeException(nameof(value));
+
+        if (!levels.ContainsKey(type))
+            return false;
+
+        levels[type] += value;
+        return true;
+    }
+
+    public bool Decrease(PollutionType type, double value)
+    {
+        if (value < 0)
+            throw new ArgumentOutOfRangeException(nameof(value));
+
+        if (!levels.ContainsKey(type))
+            return false;
+
+        levels[type] = Math.Max(0, levels[type] - value);
+        return true;
+    }
+
+    public double? GetLevel(PollutionType type) =>
+        levels.TryGetValue(type, out double value) ? value : null;
+
+    public bool HasParameter(PollutionType type) => levels.ContainsKey(type);
 }

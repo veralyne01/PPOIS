@@ -1,10 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+namespace EcologyProject;
 
-namespace EcologyProject.Organisms
+public class Bird : Animal
 {
-    internal class Bird
+    public BirdTypes Category { get; }
+
+    public Bird(string name, BirdTypes category, IEnumerable<string>? food = null)
+        : base("Bird", name, food ?? Array.Empty<string>())
+    {
+        Category = category;
+    }
+
+    public Bird(string name, IEnumerable<string>? food = null)
+        : this(name, BirdTypes.passeriformes, food)
     {
     }
 }

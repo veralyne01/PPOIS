@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+namespace EcologyProject;
 
-namespace EcologyProject
+public class Algae : Plant
 {
-    class Algae
+    public Algae(string name) : base(name)
     {
     }
 }

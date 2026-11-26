@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+namespace EcologyProject;
 
-namespace EcologyProject.Organisms
+public class Insect : Animal
 {
-    internal class Insect
+    public Insect(string name, IEnumerable<string>? food = null)
+        : base("Insect", name, food ?? Array.Empty<string>())
     {
     }
 }

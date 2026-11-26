@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EcologyProject
 {
-    class AreaClimate
+    public class AreaClimate
     {
         public double minTemperature { get; private set; }
         public double maxTemperature { get; private set; }

@@ -1,24 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+namespace EcologyProject;
 
-namespace EcologyProject
+public class Hunter
 {
-    class Hunter
+    private readonly Dictionary<string, int> target;
+    private readonly Dictionary<string, int> killed = new(StringComparer.OrdinalIgnoreCase);
+
+    public IReadOnlyDictionary<string, int> Target => target;
+    public IReadOnlyDictionary<string, int> Killed => killed;
+
+    public Hunter(Dictionary<string, int> target)
     {
-        public Dictionary<Organism, int>? target { get; private set; }
-        public Dictionary<Organism, int>? killed { get; private set; }
-        public Hunter(Dictionary<Organism, int>? target)
-        {
-            this.target = target;
-            killed = new Dictionary<Organism, int>();
-        }
-        public void Kill(Organism victim)
-        {
-            if (!target!.ContainsKey(victim))
-            {
-                throw new
-            }
-        }
+        this.target = target ?? throw new ArgumentNullException(nameof(target));
+    }
+
+    public void Kill(Organism victim, NaturalArea area, Ecosystem ecosystem)
+    {
+        if (!victim.IsAlive || !target.TryGetValue(victim.Name, out int limit))
+            throw new WrongVictimException();
+
+        int alreadyKilled = killed.GetValueOrDefault(victim.Name);
+        if (alreadyKilled >= limit || !ecosystem.CanHunt(victim.Name, area))
+            throw new WrongVictimException();
+
+        victim.MarkAsHunted();
+        area.RemoveCreature(victim);
+        killed[victim.Name] = alreadyKilled + 1;
     }
 }

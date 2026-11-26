@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+namespace EcologyProject;
 
-namespace EcologyProject.Organisms
+public class Tree : Plant
 {
-    internal class Tree
+    public Tree(string name) : base(name)
     {
     }
 }

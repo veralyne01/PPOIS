@@ -1,34 +1,67 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+namespace EcologyProject;
 
-namespace EcologyProject
+public abstract class NaturalArea
 {
-    public abstract class NaturalArea
+    private readonly HashSet<string> allowedOrganisms;
+    private readonly List<Organism> organisms = new();
+    private readonly HashSet<NaturalArea> neighbors = new();
+
+    public int Id { get; }
+    private static int nextId;
+    public double Size { get; }
+    public string Name { get; }
+    public abstract NaturalAreaType AreaType { get; }
+    public PollutionLevel Pollution { get; } = new();
+    public IReadOnlyList<Organism> Organisms => organisms;
+    public IReadOnlyCollection<NaturalArea> Neighbors => neighbors;
+    public int MapX { get; internal set; } = -1;
+    public int MapY { get; internal set; } = -1;
+    public AreaClimate? Climate { get; set; }
+
+    protected NaturalArea(double size, string name, IEnumerable<string> allowedNames)
     {
-        public double size { get; private set; }
-        public string? name { get; private set; }
-        public PollutionLevel pollution {  get; protected set; }
-        public List<string>? allowedOrganisms;
-        public List<Organism>? organisms; 
+        if (size <= 0)
+            throw new ArgumentOutOfRangeException(nameof(size));
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Area name cannot be empty.", nameof(name));
 
-        public NaturalArea(double size, string? name, List<string>? allowedOrganisms, List<Organism>? organisms)
-        {
-            this.size = size;
-            this.name = name;
-            this.allowedOrganisms = allowedOrganisms;
-            this.organisms = organisms;
-            pollution = new PollutionLevel();
-        }
-
-        public void AddCreature(Organism organism)
-        {
-            if (!allowedOrganisms!.Contains(organism.name!))
-            {
-                throw new UnsuitableNatureAreaException();
-            }
-            organisms!.Add(organism);
-        }
-
+        Id = Interlocked.Increment(ref nextId);
+        Size = size;
+        Name = name;
+        allowedOrganisms = new HashSet<string>(allowedNames, StringComparer.OrdinalIgnoreCase);
     }
+
+    public bool CanContainOrganism(Organism organism) =>
+        allowedOrganisms.Contains(organism.Name);
+
+    public void AddCreature(Organism organism)
+    {
+        ArgumentNullException.ThrowIfNull(organism);
+
+        if (!organism.IsAlive)
+            throw new InvalidOperationException("A dead organism cannot be added to an area.");
+
+        if (!CanContainOrganism(organism))
+            throw new UnsuitableNatureAreaException();
+
+        if (organisms.Any(item => item.Id == organism.Id))
+            throw new InvalidOperationException("This organism is already in the area.");
+
+        organisms.Add(organism);
+    }
+
+    public bool RemoveCreature(Organism organism) => organisms.Remove(organism);
+
+    public void AddNeighbor(NaturalArea area)
+    {
+        if (area == this)
+            return;
+
+        neighbors.Add(area);
+        area.neighbors.Add(this);
+    }
+
+    internal void RemoveDeadOrganisms() => organisms.RemoveAll(item => !item.IsAlive);
+
+    public override string ToString() => $"{Name} [{AreaType}]";
 }
