@@ -4,12 +4,12 @@ using System.Text;
 
 namespace EcologyProject
 {
-    abstract class NaturalArea
+    public abstract class NaturalArea
     {
         public double size { get; private set; }
         public string? name { get; private set; }
         public PollutionLevel pollution {  get; protected set; }
-        private List<string>? allowedOrganisms;
+        public List<string>? allowedOrganisms;
         public List<Organism>? organisms; 
 
         public NaturalArea(double size, string? name, List<string>? allowedOrganisms, List<Organism>? organisms)
@@ -18,6 +18,7 @@ namespace EcologyProject
             this.name = name;
             this.allowedOrganisms = allowedOrganisms;
             this.organisms = organisms;
+            pollution = new PollutionLevel();
         }
 
         public void AddCreature(Organism organism)

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace EcologyProject.Areas
+namespace EcologyProject
 {
-    internal class Plaincs
+    class Plains
     {
     }
 }

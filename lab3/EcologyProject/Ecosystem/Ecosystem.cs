@@ -6,6 +6,7 @@ namespace EcologyProject
 {
     class Ecosystem
     {
+        List<NaturalArea>? areas;
 
     }
 }
