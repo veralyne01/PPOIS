@@ -30,4 +30,18 @@ namespace EcologyProject
         marine, //морские
         anadromous //проходные
     }
+
+    public enum FactoryType
+    {
+        TPP, //thermal power plant - ТЭС
+        HPS, //hydroelectric power station - ГЭС
+        NPP //nuclear power plant - АЭС
+    }
+
+    public enum PollutionType
+    {
+        Air,
+        Water,
+        Soil
+    }
 }

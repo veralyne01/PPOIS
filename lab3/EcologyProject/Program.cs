@@ -1,1 +1,10 @@
-﻿Console.WriteLine("Hello, World!");
+﻿namespace EcologyProject
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+
+        }
+    }
+}

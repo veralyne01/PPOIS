@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EcologyProject.Areas
 {
-    internal class Forest : NaturalArea
+    class Forest : NaturalArea
     {
     }
 }
