@@ -6,7 +6,11 @@ namespace EcologyProject
 {
     class Mammal :  Organism
     {
-        MammalTypes foodType;
-        string type;
+        public MammalTypes foodType { get; private set; }
+        public Mammal(string type, )
+            :base(type)
+        {
+             
+        }
     }
 }

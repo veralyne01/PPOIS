@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace EcologyProject.Organisms
+namespace EcologyProject
 {
-    internal class Animal
+    class Ecosystem
     {
+
     }
 }

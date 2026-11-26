@@ -4,7 +4,11 @@ using System.Text;
 
 namespace EcologyProject
 {
-    internal class NaturalArea
+    class NaturalArea
     {
+        public double size { get; private set; }
+        public string name { get; private set; }
+        public List<string>? allowedAnimals { get; private set; }
+
     }
 }

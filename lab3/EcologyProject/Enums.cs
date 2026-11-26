@@ -6,9 +6,28 @@ namespace EcologyProject
 {
     public enum MammalTypes
     {
-        predator,
-        herbivorous,
-        insectivoroous,
-        omnivorous
+        predator, //хищники
+        rodent, //грызуны
+        primate, //приматы
+        chiroptera, //рукокрылые
+        insectivorous, //насекомоядные
+        artiodactyl, //парнокопытные
+        perissodactyl//непарнокопытные
+    }
+
+    public enum BirdTypes
+    {
+        passeriformes, //воробьинообразные
+        woody, //древесные
+        waterfaul, //водоплавающие
+        predator, //хищники
+        nonflying //нелетающие
+
+    }
+    public enum FishTypes
+    {
+        freshwater, //пресноводные
+        marine, //морские
+        anadromous //проходные
     }
 }
