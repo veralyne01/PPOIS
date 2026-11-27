@@ -6,12 +6,12 @@ public class Mountain : NaturalArea
 
     public Mountain(double size, string name) : base(size, name, new[]
     {
-        "Бурый медведь", "Волк", "Лиса", "Рысь", "Благородный олень", "Горный козёл",
-        "Снежный барс", "Сурок альпийский", "Архар", "Серна", "Як", "Снежная полёвка",
-        "Беркут", "Бородач", "Альпийская галка", "Улар", "Горный шмель",
-        "Альпийская бабочка", "Горная гадюка", "Скальная ящерица", "Альпийский тритон",
-        "Саламандра", "Эдельвейс", "Горечавка", "Альпийский мак", "Горная сосна",
-        "Можжевельник", "Мхи", "Лишайники", "Форель"
+        "Brown bear", "Wolf", "Fox", "Lynx", "Red deer", "Mountain goat",
+        "Snow Leopard", "Alpine Marmot", "Argali", "Chamois", "Yak", "Snow vole",
+        "Golden Eagle", "Bearded", "Alpine Jackdaw", "Ular", "Mountain bumblebee",
+        "Alpine butterfly", "Mountain viper", "Rock lizard", "Alpine newt",
+        "Salamander", "Edelweiss", "Gentian", "Alpine poppy", "Mountain Pine",
+        "Juniper", "Mosses", "Lichens", "Trout"
     })
     {
         Pollution.Add(PollutionType.Air);

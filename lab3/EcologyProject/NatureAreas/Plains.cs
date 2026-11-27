@@ -6,12 +6,12 @@ public class Plains : NaturalArea
 
     public Plains(double size, string name) : base(size, name, new[]
     {
-        "Волк", "Лиса", "Обыкновенная лиса", "Заяц", "Заяц-русак", "Суслик",
-        "Сурок", "Сайгак", "Бизон", "Косуля", "Корсак", "Степной хорёк", "Полёвка",
-        "Степной орёл", "Жаворонок", "Перепел", "Дрофа", "Серая куропатка",
-        "Журавль-красавка", "Саранча", "Кузнечик", "Богомол", "Шмель земляной",
-        "Степная гадюка", "Прыткая ящерица", "Желтобрюхий полоз", "Тарантул",
-        "Каракурт", "Ковыль", "Типчак", "Полынь", "Клевер", "Ромашка", "Василёк", "Мак"
+        "Wolf", "Fox", "Common fox", "Hare", "Hare-hare", "Gopher",
+        "Groundhog", "Saiga", "Bison", "Roe deer", "Korsak", "Steppe ferret", "Vole",
+        "Steppe Eagle", "Lark", "Quail", "Bustard", "Grey partridge",
+        "Beauty Crane", "Locust", "Grasshopper", "Mantis", "Bumblebee",
+        "Steppe viper", "Nimble lizard", "Yellow-bellied runner", "Tarantula",
+        "Karakurt", "Kovyl", "Tipchak", "Wormwood", "Clover", "Chamomile", "Cornflower", "Poppy"
     })
     {
         Pollution.Add(PollutionType.Air);

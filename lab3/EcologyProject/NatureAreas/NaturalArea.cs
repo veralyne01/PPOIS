@@ -38,9 +38,6 @@ public abstract class NaturalArea
     {
         ArgumentNullException.ThrowIfNull(organism);
 
-        if (!organism.IsAlive)
-            throw new InvalidOperationException("A dead organism cannot be added to an area.");
-
         if (!CanContainOrganism(organism))
             throw new UnsuitableNatureAreaException();
 

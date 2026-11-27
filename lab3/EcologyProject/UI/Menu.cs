@@ -104,6 +104,9 @@ namespace EcologyProject
 
                 Console.WriteLine("Enter area name:");
                 string name = Console.ReadLine() ?? string.Empty;
+                Console.WriteLine("Enter area size:");
+                double size;
+                Double.TryParse(Console.ReadLine(), out size);
 
                 if (string.IsNullOrWhiteSpace(name))
                 {
@@ -113,12 +116,12 @@ namespace EcologyProject
 
                 NaturalArea? area = input switch
                 {
-                    "1" => new Forest(100, name),
-                    "2" => new Lake(100, name),
-                    "3" => new River(100, name),
-                    "4" => new Sea(100, name),
-                    "5" => new Mountain(100, name),
-                    "6" => new Plains(100, name),
+                    "1" => new Forest(size, name),
+                    "2" => new Lake(size, name),
+                    "3" => new River(size, name),
+                    "4" => new Sea(size, name),
+                    "5" => new Mountain(size, name),
+                    "6" => new Plains(size, name),
                     _ => null
                 };
 

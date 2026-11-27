@@ -6,12 +6,12 @@ public class Lake : NaturalArea
 
     public Lake(double size, string name) : base(size, name, new[]
     {
-        "Бобр", "Выдра", "Ондатра", "Водяная полёвка", "Утка-кряква", "Лебедь-шипун",
-        "Серая цапля", "Поганка", "Камышница", "Щука", "Карась", "Окунь", "Плотва",
-        "Лещ", "Линь", "Карп", "Судак", "Озёрная лягушка", "Прудовая лягушка",
-        "Тритон", "Болотная черепаха", "Уж обыкновенный", "Речной рак", "Прудовик",
-        "Беззубка", "Катушка", "Стрекоза", "Водомерка", "Жук-плавунец", "Комар",
-        "Кувшинка", "Кубышка", "Ряска", "Камыш", "Тростник", "Рогоз", "Спирогира", "Хлорелла"
+        "Beaver", "Otter", "Muskrat", "Water vole", "Mallard Duck", "Hissing Swan",
+        "Grey Heron", "Grebe", "Reed Warbler", "Pike", "Crucian carp", "Perch", "Roach",
+        "Bream", "Tench", "Carp", "Walleye", "Lake frog", "Pond frog",
+        "Newt", "Marsh turtle", "Common snake", "Crayfish", "Pond crab",
+        "Toothless", "Reel", "Dragonfly", "Vodomerka", "Floating beetle", "Mosquito",
+        "Water lily", "Cup", "Duckweed", "Reed", "Reed", "Cattail", "Spirogyra", "Chlorella"
     })
     {
         Pollution.Add(PollutionType.Water);
