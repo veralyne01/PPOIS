@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="EcologyProject.csproj" />
+  <Project Path="..\EcologyProject.Tests\EcologyProject.Tests.csproj" />
 </Solution>

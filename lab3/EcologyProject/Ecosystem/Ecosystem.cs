@@ -178,7 +178,7 @@ public class Ecosystem
 
     private void GenerateFactories()
     {
-        if (areas.Count == 0 || Random.Shared.NextDouble() >= 0.001) return;
+        if (areas.Count == 0 || Random.Shared.NextDouble() >= 0.04) return;
         var location = areas[Random.Shared.Next(areas.Count)];
         var type = (FactoryType)Random.Shared.Next(Enum.GetValues<FactoryType>().Length);
         var factory = new Factory($"Factory-{factories.Count + 1}", type, location);
@@ -188,9 +188,21 @@ public class Ecosystem
 
     private void PopulateArea(NaturalArea area)
     {
-        RegrowPlants(area);
-        IntroduceAnimals(area);
+        int capacity = Math.Max(6, (int)(area.Size / 5));
+        int living = area.Organisms.Count(item => item.IsAlive);
+        if (living >= capacity || area.AllowedOrganismNames.Count == 0 || Random.Shared.NextDouble() >= 0.18) return;
+
+        string[] names = area.AllowedOrganismNames.ToArray();
+        string name = names[Random.Shared.Next(names.Length)];
+        try
+        {
+            area.AddCreature(OrganismCatalog.Create(name, names));
+        }
+        catch (UnsuitableNatureAreaException)
+        {
+        }
     }
+
     private void ReproduceAnimals(NaturalArea area)
     {
         int capacity = Math.Max(6, (int)(area.Size / 5));
@@ -301,69 +313,6 @@ public class Ecosystem
             }
             foreach (var pollution in area.Pollution.Levels)
                 Console.WriteLine($"  {pollution.Key}: {pollution.Value:F2}");
-        }
-    }
-
-    private void RegrowPlants(NaturalArea area)
-    {
-        string[] plants = area.AllowedOrganismNames
-            .Where(OrganismCatalog.IsPlant)
-            .ToArray();
-
-        if (plants.Length == 0) return;
-
-        int plantCount = area.Organisms
-            .Count(item => item.IsAlive && item is Plant);
-
-        int capacity = Math.Max(4, (int)(area.Size / 4));
-
-        if (plantCount >= capacity || Random.Shared.NextDouble() >= 0.35)
-            return;
-
-        string name = plants[Random.Shared.Next(plants.Length)];
-        area.AddCreature(OrganismCatalog.Create(name, area.AllowedOrganismNames));
-
-        Console.WriteLine($"New {name} appeared in {area.Name}.");
-    }
-
-    private void IntroduceAnimals(NaturalArea area)
-    {
-        int capacity = Math.Max(4, (int)(area.Size / 10));
-
-        int living = area.Organisms
-            .OfType<Animal>()
-            .Count(item => item.IsAlive);
-
-        if (living >= capacity) return;
-        string[] species = area.AllowedOrganismNames
-            .Where(name => !OrganismCatalog.IsPlant(name) &&
-                           !OrganismCatalog.IsMushroom(name))
-            .ToArray();
-
-        if (species.Length == 0) return;
-
-        int animalCount = area.Organisms
-            .OfType<Animal>()
-            .Count(item => item.IsAlive);
-
-        if (animalCount >= capacity || Random.Shared.NextDouble() >= 0.03)
-            return;
-
-        foreach (string name in species.OrderBy(_ => Random.Shared.Next()))
-        {
-            var animal = OrganismCatalog.Create(name, area.AllowedOrganismNames);
-
-            bool hasFood = animal.Food.Any(foodName =>
-                area.Organisms.Any(item =>
-                    item.IsAlive &&
-                    item.Name.Equals(foodName, StringComparison.OrdinalIgnoreCase)));
-
-            if (!hasFood) continue;
-
-            area.AddCreature(animal);
-
-            Console.WriteLine($"A new {name} appeared in {area.Name}.");
-            return;
         }
     }
 }
