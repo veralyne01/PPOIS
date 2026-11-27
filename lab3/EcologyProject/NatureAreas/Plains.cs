@@ -6,7 +6,7 @@ public class Plains : NaturalArea
 
     public Plains(double size, string name) : base(size, name, new[]
     {
-        "Wolf", "Fox", "Common fox", "Hare", "Hare-hare", "Gopher",
+        "Wolf", "Fox", "Common fox", "Hare", "Grass", "Shrub", "Hare-hare", "Gopher",
         "Groundhog", "Saiga", "Bison", "Roe deer", "Korsak", "Steppe ferret", "Vole",
         "Steppe Eagle", "Lark", "Quail", "Bustard", "Grey partridge",
         "Beauty Crane", "Locust", "Grasshopper", "Mantis", "Bumblebee",

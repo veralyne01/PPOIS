@@ -11,7 +11,7 @@ public class Lake : NaturalArea
         "Bream", "Tench", "Carp", "Walleye", "Lake frog", "Pond frog",
         "Newt", "Marsh turtle", "Common snake", "Crayfish", "Pond crab",
         "Toothless", "Reel", "Dragonfly", "Vodomerka", "Floating beetle", "Mosquito",
-        "Water lily", "Cup", "Duckweed", "Reed", "Reed", "Cattail", "Spirogyra", "Chlorella"
+        "Water lily", "Cup", "Duckweed", "AquaticPlant", "Reed", "Reed", "Cattail", "Spirogyra", "Chlorella"
     })
     {
         Pollution.Add(PollutionType.Water);

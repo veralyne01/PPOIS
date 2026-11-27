@@ -13,10 +13,12 @@ public abstract class NaturalArea
     public abstract NaturalAreaType AreaType { get; }
     public PollutionLevel Pollution { get; } = new();
     public IReadOnlyList<Organism> Organisms => organisms;
+    public IReadOnlyCollection<string> AllowedOrganismNames => allowedOrganisms;
     public IReadOnlyCollection<NaturalArea> Neighbors => neighbors;
     public int MapX { get; internal set; } = -1;
     public int MapY { get; internal set; } = -1;
     public AreaClimate? Climate { get; set; }
+    public TodayWeather? CurrentWeather { get; internal set; }
 
     protected NaturalArea(double size, string name, IEnumerable<string> allowedNames)
     {
@@ -28,21 +30,22 @@ public abstract class NaturalArea
         Id = Interlocked.Increment(ref nextId);
         Size = size;
         Name = name;
-        allowedOrganisms = new HashSet<string>(allowedNames, StringComparer.OrdinalIgnoreCase);
+        allowedOrganisms = new HashSet<string>(allowedNames.Where(item => !string.IsNullOrWhiteSpace(item)).Select(item => item.Trim()), StringComparer.OrdinalIgnoreCase);
     }
 
     public bool CanContainOrganism(Organism organism) =>
-        allowedOrganisms.Contains(organism.Name);
+        allowedOrganisms.Contains(organism.Name.Trim());
 
     public void AddCreature(Organism organism)
     {
         ArgumentNullException.ThrowIfNull(organism);
+        if (!organism.IsAlive) throw new OrganismAlreadyDeadException();
 
         if (!CanContainOrganism(organism))
             throw new UnsuitableNatureAreaException();
 
         if (organisms.Any(item => item.Id == organism.Id))
-            throw new InvalidOperationException("This organism is already in the area.");
+            throw new OrganismAlreadyExistsException();
 
         organisms.Add(organism);
     }

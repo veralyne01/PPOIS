@@ -28,7 +28,7 @@ public abstract class Organism
     internal void MarkEaten()
     {
         if (!IsAlive)
-            throw new InvalidOperationException($"{Name} is already dead.");
+            throw new OrganismAlreadyDeadException();
 
         IsAlive = false;
     }

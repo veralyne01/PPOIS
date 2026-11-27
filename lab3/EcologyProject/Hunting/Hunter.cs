@@ -15,7 +15,7 @@ public class Hunter
 
     public void Kill(Organism victim, NaturalArea area, Ecosystem ecosystem)
     {
-        if (!victim.IsAlive || !target.TryGetValue(victim.Name, out int limit))
+        if (victim is not Animal || !victim.IsAlive || !target.TryGetValue(victim.Name, out int limit))
             throw new WrongVictimException();
 
         int alreadyKilled = killed.GetValueOrDefault(victim.Name);

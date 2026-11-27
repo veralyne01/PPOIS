@@ -1,26 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+namespace EcologyProject;
 
-namespace EcologyProject
+public class TodayWeather
 {
-    class TodayWeather
+    public double Temperature { get; }
+    public double Precipitation { get; }
+    public double CloudCover { get; }
+
+    public TodayWeather(AreaClimate climate)
     {
-        private double temperature;
-        private double precipitation;
-        private double cloudCover;
-        public TodayWeather(AreaClimate climate)
-        {
-            temperature = climate.minTemperature + Random.Shared.NextDouble() * (climate.maxTemperature - climate.minTemperature);
-            precipitation = climate.minPrecipitation + Random.Shared.NextDouble() * (climate.maxPrecipitation - climate.minPrecipitation);
-            cloudCover = climate.minCloudCover + Random.Shared.NextDouble() * (climate.maxCloudCover - climate.minCloudCover);
-        }
-    
-        public void ShowCurrentWeather()
-        {
-            Console.WriteLine($"Temperature: {temperature} °C");
-            Console.WriteLine($"Precipitation: {precipitation} %");
-            Console.WriteLine($"Temperature: {cloudCover} %");
-        }
+        ArgumentNullException.ThrowIfNull(climate);
+        Temperature = climate.minTemperature + Random.Shared.NextDouble() * (climate.maxTemperature - climate.minTemperature);
+        Precipitation = climate.minPrecipitation + Random.Shared.NextDouble() * (climate.maxPrecipitation - climate.minPrecipitation);
+        CloudCover = climate.minCloudCover + Random.Shared.NextDouble() * (climate.maxCloudCover - climate.minCloudCover);
+    }
+
+    public void ShowCurrentWeather()
+    {
+        Console.WriteLine($"Temperature: {Temperature:F1} °C");
+        Console.WriteLine($"Precipitation: {Precipitation:F1} %");
+        Console.WriteLine($"Cloud cover: {CloudCover:F1} %");
     }
 }

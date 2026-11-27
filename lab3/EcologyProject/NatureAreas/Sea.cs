@@ -11,7 +11,7 @@ public class Sea : NaturalArea
         "Flounder", "Mackerel", "Seahorse", "Turtle",
         "Kamchatka Crab", "Lobster", "Shrimp", "Lobster",
         "Octopus", "Squid", "Mussel", "Oyster", "Scallop", "Jellyfish",
-        "Sea Anemone", "Coral", "Laminaria", "Fucus", "Ulva", "Zostera"
+        "Sea Anemone", "Coral", "Laminaria", "Fucus", "Ulva", "Zostera", "AquaticPlant"
     })
     {
         Pollution.Add(PollutionType.Water);

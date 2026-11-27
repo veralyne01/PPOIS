@@ -10,11 +10,17 @@ public abstract class ProtectedArea
 
     protected ProtectedArea(string name, List<NaturalArea> areas)
     {
+        if (string.IsNullOrWhiteSpace(name)) throw new InvalidProtectedAreaException();
+        if (areas is null || areas.Count == 0) throw new InvalidProtectedAreaException();
         Name = name;
-        this.areas = areas;
+        this.areas.AddRange(areas);
     }
 
-    public void AddArea(NaturalArea area) => areas.Add(area);
+    public void AddArea(NaturalArea area)
+    {
+        ArgumentNullException.ThrowIfNull(area);
+        if (!areas.Contains(area)) areas.Add(area);
+    }
     public bool Contains(NaturalArea area) => areas.Contains(area);
     public abstract bool IsHuntingAllowed(string organismName);
 }

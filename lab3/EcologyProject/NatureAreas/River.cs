@@ -11,7 +11,7 @@ public class River : NaturalArea
         "Walleye", "Lake frog", "Grass frog", "Newt", "Common snake",
         "Marsh turtle", "Crayfish", "Toothless", "Pearl barley", "Coil",
         "Mayfly", "Brook", "Dragonfly", "Water Strider", "Reed", "Reed", "Cattail",
-        "Spirogyra"
+        "Spirogyra", "AquaticPlant"
     })
     {
         Pollution.Add(PollutionType.Water);
