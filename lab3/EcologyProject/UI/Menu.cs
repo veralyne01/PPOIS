@@ -39,7 +39,8 @@ namespace EcologyProject
                         break;
 
                     case "3":
-                        Console.WriteLine("Statistics");
+                        Console.WriteLine("\nSTATISTICS:");
+                        ecosystem.ShowStatus();
                         Console.ReadLine();
                         break;
 
@@ -61,7 +62,9 @@ namespace EcologyProject
                 Console.WriteLine(
                     "Choose option:\n" +
                     "1. Add new nature area\n" +
-                    "2. Back\n> "
+                    "2. Add national park\n" + 
+                    "3. Add nature reserve\n" +
+                    "4. Back\n> "
                 );
 
                 string? input = Console.ReadLine();
@@ -69,10 +72,16 @@ namespace EcologyProject
                 switch (input)
                 {
                     case "1":
-                        AddArea(ecosystem);
+                        AddAreaToEcosystem(ecosystem);
                         break;
 
                     case "2":
+                        break;
+
+                    case "3":
+                        break;
+
+                    case "4":
                         return;
 
                     default:
@@ -82,7 +91,7 @@ namespace EcologyProject
             }
         }
 
-        public static void AddArea(Ecosystem ecosystem)
+        public static void AddAreaToEcosystem(Ecosystem ecosystem)
         {
             Console.WriteLine(
                 "Choose area type:\n" +
@@ -136,6 +145,44 @@ namespace EcologyProject
                 Console.WriteLine($"{name} successfully added!");
                 return;
             }
+        }
+
+        public static void AddProtectedArea()
+        {
+
+        }
+
+        public static List<NaturalArea> GetAreasAsList(Ecosystem ecosystem)
+        {
+            int i = 0;
+            List<NaturalArea> list = new List<NaturalArea>();
+            Dictionary<int, NaturalArea> dict = new Dictionary<int, NaturalArea>();
+            foreach (var area in ecosystem.Areas)
+            {
+                Console.WriteLine($"{++i}. {area.Name}");
+                dict.Add(i, area);
+            }
+            Console.WriteLine("Choose areas to add: ");
+
+            string input = Console.ReadLine();
+
+            string[] parts = input.Split(
+                new[] { ' ', ',', ';' },
+                StringSplitOptions.RemoveEmptyEntries
+            );
+
+            foreach (string part in parts)
+            {
+                if (int.TryParse(part, out int number))
+                {
+                    if (dict.TryGetValue(number, out NaturalArea cur)) list.Add(cur);
+                }
+                else
+                {
+                    throw new FormatException($"Invalid number: {part}");
+                }
+            }
+            return list;
         }
     }
 }

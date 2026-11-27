@@ -1,4 +1,6 @@
-﻿namespace EcologyProject;
+﻿using EcologyProject.Exceptions;
+
+namespace EcologyProject;
 
 public class Ecosystem
 {
@@ -37,7 +39,7 @@ public class Ecosystem
         }
         else if (areas.Any(item => item.MapX == x && item.MapY == y))
         {
-            throw new InvalidOperationException("This map cell is already occupied.");
+            throw new MapException();
         }
 
         area.MapX = x;
@@ -54,7 +56,7 @@ public class Ecosystem
     public void ConnectAreas(NaturalArea first, NaturalArea second)
     {
         if (!areas.Contains(first) || !areas.Contains(second))
-            throw new InvalidOperationException("Both areas must belong to this ecosystem.");
+            throw new ObjectIsNotInTheEcosystemException();
 
         first.AddNeighbor(second);
     }
@@ -63,7 +65,7 @@ public class Ecosystem
     {
         ArgumentNullException.ThrowIfNull(factory);
         if (!areas.Contains(factory.Location))
-            throw new InvalidOperationException("Factory location must belong to this ecosystem.");
+            throw new ObjectIsNotInTheEcosystemException();
         factories.Add(factory);
     }
 
@@ -73,7 +75,7 @@ public class Ecosystem
         foreach (var area in protectedZones)
         {
             if (!areas.Contains(area))
-                throw new InvalidOperationException("Protected zones must belong to this ecosystem.");
+                throw new ObjectIsNotInTheEcosystemException();
             protectedArea.AddArea(area);
         }
         protectedAreas.Add(protectedArea);
@@ -104,18 +106,6 @@ public class Ecosystem
         }
     }
 
-    public void AdvanceDay()
-    {
-        foreach (var area in areas)
-        {
-            foreach (var animal in area.Organisms.OfType<Animal>().Where(item => item.IsAlive).ToList())
-                animal.LiveDay(area);
-
-            area.RemoveDeadOrganisms();
-        }
-
-        ApplyFactoryEmissions();
-    }
 
     public void ShowMap()
     {

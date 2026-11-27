@@ -2,17 +2,16 @@ namespace EcologyProject;
 
 public abstract class ProtectedArea
 {
-    private readonly HashSet<NaturalArea> areas = new();
+    private readonly List<NaturalArea> areas = new();
     public string Name { get; }
     public IReadOnlyCollection<NaturalArea> Areas => areas;
     public abstract double EmissionMultiplier { get; }
     public abstract bool ProtectsAllSpeciesFromHunting { get; }
 
-    protected ProtectedArea(string name)
+    protected ProtectedArea(string name, List<NaturalArea> areas)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Protected area name cannot be empty.", nameof(name));
         Name = name;
+        this.areas = areas;
     }
 
     public void AddArea(NaturalArea area) => areas.Add(area);
