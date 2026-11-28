@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace GeneralizedProgramming
+﻿namespace GeneralizedProgramming
 {
     public sealed class Graph<T> : IGraphOwner, IEquatable<Graph<T>>, IComparable<Graph<T>>
         where T : IComparable<T>

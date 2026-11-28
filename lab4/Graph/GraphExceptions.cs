@@ -1,5 +1,3 @@
-using System;
-
 namespace GeneralizedProgramming
 {
     /// <summary>Базовое исключение контейнера Graph.</summary>

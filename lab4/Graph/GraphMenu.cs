@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace GeneralizedProgramming
+﻿namespace GeneralizedProgramming
 {
     /// <summary>Консольное меню для демонстрации контейнера Graph&lt;string&gt;.</summary>
     public sealed class GraphMenu
