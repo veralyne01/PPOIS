@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="../Graph.Tests/Graph.Tests.csproj" Id="096e5ba8-6fcf-4829-b7cf-0f2df9c267e1" />
+  <Project Path="Graph.csproj" />
+</Solution>

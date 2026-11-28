@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="../GeneralizedProgramming.Tests/GeneralizedProgramming.Tests.csproj" Id="a121d49c-12d9-401d-8e12-3eadc6cb8934" />
   <Project Path="GeneralizedProgramming.csproj" />
 </Solution>
