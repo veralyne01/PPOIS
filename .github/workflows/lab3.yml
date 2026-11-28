@@ -1,0 +1,403 @@
+name: LAB3 CI/CD
+
+on:
+  push:
+    branches:
+      - lab3
+    tags:
+      - "lab3-v*"
+    paths:
+      - "lab3/**"
+      - ".github/workflows/lab3.yml"
+
+  pull_request:
+    branches:
+        - lab3
+    paths:
+      - "lab3/**"
+      - ".github/workflows/lab3.yml"
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build LAB3
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.401"
+
+      # =================================================
+      # FIND PROJECTS
+      # =================================================
+
+      - name: Find C# projects
+        shell: bash
+        env:
+          LAB: lab3
+        run: |
+          find "$LAB" \
+            -type f \
+            -name '*.csproj' \
+            -not -path '*/bin/*' \
+            -not -path '*/obj/*' \
+            -not -path '*/.vs/*' \
+            | sort > projects.txt
+
+          if [ ! -s projects.txt ]; then
+            echo "::error::No C# projects found in $LAB"
+            exit 1
+          fi
+
+          : > tests.txt
+          : > apps.txt
+
+          while IFS= read -r project; do
+            if grep -qiE \
+              'Microsoft[.]NET[.]Test[.]Sdk|Microsoft[.]Testing[.]Platform|xunit|MSTest|NUnit|TestingPlatformDotnetTestSupport|UseMicrosoftTestingPlatformRunner|IsTestProject' \
+              "$project"; then
+
+              echo "$project" >> tests.txt
+            else
+              echo "$project" >> apps.txt
+            fi
+          done < projects.txt
+
+          echo "Projects:"
+          cat projects.txt
+
+          echo "Test projects:"
+          cat tests.txt
+
+          echo "Application projects:"
+          cat apps.txt
+
+          if [ ! -s tests.txt ]; then
+            echo "::error::No test projects found in $LAB"
+            exit 1
+          fi
+
+          if [ ! -s apps.txt ]; then
+            echo "::error::No application projects found in $LAB"
+            exit 1
+          fi
+
+      # =================================================
+      # RESTORE
+      # =================================================
+
+      - name: Restore projects
+        shell: bash
+        run: |
+          while IFS= read -r project; do
+            echo "Restoring: $project"
+            dotnet restore "$project"
+          done < projects.txt
+
+      # =================================================
+      # TESTS AND COVERAGE
+      # =================================================
+
+      - name: Run tests and check coverage threshold
+        shell: bash
+        run: |
+          threshold=90
+          failed=0
+
+          mkdir -p TestResults
+
+          while IFS= read -r project; do
+            project_dir=$(dirname "$project")
+            project_file=$(basename "$project")
+
+            name="${project%.csproj}"
+            safe_name=$(echo "$name" | tr '/ ' '__')
+
+            outdir="$GITHUB_WORKSPACE/TestResults/$safe_name"
+
+            mkdir -p "$outdir"
+
+            echo "========================================"
+            echo "Testing: $project"
+            echo "========================================"
+
+            # Detect Microsoft Testing Platform.
+            mtp=false
+
+            if grep -qiE \
+              'Microsoft\.Testing\.Platform|xunit\.v3\.mtp|UseMicrosoftTestingPlatformRunner|TestingPlatformDotnetTestSupport' \
+              "$project"; then
+
+              mtp=true
+            else
+              search_dir="$project_dir"
+
+              while true; do
+                if [ -f "$search_dir/global.json" ] &&
+                   grep -qE \
+                     '"runner"[[:space:]]*:[[:space:]]*"Microsoft\.Testing\.Platform"' \
+                     "$search_dir/global.json"; then
+
+                  mtp=true
+                  break
+                fi
+
+                if [ "$search_dir" = "." ] ||
+                   [ "$search_dir" = "$GITHUB_WORKSPACE" ]; then
+                  break
+                fi
+
+                parent_dir=$(dirname "$search_dir")
+
+                if [ "$parent_dir" = "$search_dir" ]; then
+                  break
+                fi
+
+                search_dir="$parent_dir"
+              done
+            fi
+
+            if [ "$mtp" = true ]; then
+              echo "Test runner: Microsoft Testing Platform"
+
+              (
+                cd "$project_dir"
+
+                dotnet test \
+                  --project "./$project_file" \
+                  --configuration Release \
+                  --no-restore \
+                  --results-directory "$outdir" \
+                  --coverlet \
+                  --coverlet-output-format cobertura
+              ) || failed=1
+
+            else
+              echo "Test runner: VSTest"
+
+              (
+                cd "$project_dir"
+
+                dotnet test "./$project_file" \
+                  --configuration Release \
+                  --no-restore \
+                  --collect:"XPlat Code Coverage" \
+                  --results-directory "$outdir"
+              ) || failed=1
+            fi
+
+            # Find Cobertura report.
+            file=$(find "$outdir" -type f \
+              \( -name 'coverage.cobertura.xml' \
+              -o -name 'coverage.cobertura.*.xml' \) \
+              -print -quit)
+
+            if [ -z "$file" ]; then
+              echo "::error::No coverage file found for $project"
+              failed=1
+              continue
+            fi
+
+            rate=$(grep -o -m1 'line-rate="[0-9.]*"' "$file" \
+              | cut -d'"' -f2)
+
+            if [ -z "$rate" ]; then
+              echo "::error::Cannot read coverage rate for $project"
+              failed=1
+              continue
+            fi
+
+            percent=$(awk -v r="$rate" \
+              'BEGIN { printf "%.2f", r * 100 }')
+
+            echo "Line coverage: $percent%"
+            echo "Required coverage: $threshold%"
+
+            if awk -v p="$percent" -v t="$threshold" \
+              'BEGIN { exit !(p < t) }'; then
+
+              echo "::error::Coverage of $project is $percent%, below $threshold%"
+              failed=1
+            fi
+
+          done < tests.txt
+
+          exit "$failed"
+
+      # =================================================
+      # COVERAGE REPORT
+      # =================================================
+
+      - name: Coverage summary
+        if: always()
+        shell: bash
+        run: |
+          if ! find TestResults -type f \
+            \( -name 'coverage.cobertura.xml' \
+            -o -name 'coverage.cobertura.*.xml' \) \
+            | grep -q .; then
+
+            echo "No coverage files, skipping report"
+            exit 0
+          fi
+
+          dotnet tool install --global dotnet-reportgenerator-globaltool
+
+          export PATH="$PATH:$HOME/.dotnet/tools"
+
+          reportgenerator \
+            -reports:"TestResults/**/coverage.cobertura*.xml" \
+            -targetdir:CoverageReport \
+            -reporttypes:"MarkdownSummaryGithub;Html" \
+            -assemblyfilters:"-*_Tests;-*.Tests"
+
+          cat CoverageReport/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
+
+      # =================================================
+      # FORMATTING
+      # =================================================
+
+      - name: Check code formatting
+        shell: bash
+        run: |
+          while IFS= read -r project; do
+            echo "Checking formatting: $project"
+
+            dotnet format whitespace "$project" \
+              --verify-no-changes \
+              --verbosity diagnostic
+
+          done < projects.txt
+
+      # =================================================
+      # STATIC ANALYSIS
+      # =================================================
+
+      - name: Run static analysis
+        shell: bash
+        run: |
+          while IFS= read -r project; do
+            echo "Analyzing: $project"
+
+            dotnet format analyzers "$project" \
+              --verify-no-changes \
+              --no-restore \
+              --severity error \
+              --verbosity diagnostic
+
+          done < projects.txt
+
+      # =================================================
+      # BUILD
+      # =================================================
+
+      - name: Build projects
+        shell: bash
+        run: |
+          while IFS= read -r project; do
+            echo "Building: $project"
+
+            dotnet build "$project" \
+              --configuration Release \
+              --no-restore
+
+          done < projects.txt
+
+      # =================================================
+      # PUBLISH
+      # =================================================
+
+      - name: Publish applications
+        shell: bash
+        env:
+          LAB: lab3
+        run: |
+          mkdir -p artifacts
+
+          while IFS= read -r project; do
+            name=$(basename "$project" .csproj)
+
+            echo "Publishing $name"
+
+            dotnet publish "$project" \
+              --configuration Release \
+              --runtime win-x64 \
+              --self-contained true \
+              -p:PublishSingleFile=true \
+              -p:IncludeNativeLibrariesForSelfExtract=true \
+              --output "./artifacts/$name"
+
+          done < apps.txt
+
+      # =================================================
+      # PACKAGE CLEAN SOURCE ARCHIVE
+      # =================================================
+
+      - name: Create source archive
+        shell: bash
+        env:
+          LAB: lab3
+        run: |
+          if [ ! -d "$LAB" ]; then
+            echo "::error::Laboratory directory $LAB does not exist"
+            exit 1
+          fi
+
+          zip -r "artifacts/${LAB}-source.zip" "$LAB" \
+            -x "*/bin/*" \
+               "*/obj/*" \
+               "*/.vs/*" \
+               "*/.git/*" \
+               "*/TestResults/*" \
+               "*/CoverageReport/*"
+
+          echo "Created source archive: artifacts/${LAB}-source.zip"
+
+      # =================================================
+      # UPLOAD ARTIFACTS
+      # =================================================
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: lab3-build
+          path: artifacts/
+          if-no-files-found: error
+
+      - name: Upload coverage XML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lab3-coverage
+          path: TestResults/**/*.xml
+          if-no-files-found: warn
+
+      - name: Upload coverage HTML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lab3-coverage-html
+          path: CoverageReport/
+          if-no-files-found: warn
+
+      # =================================================
+      # PUBLISH GITHUB RELEASE
+      # =================================================
+
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/lab3-v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/**/*.exe
+            artifacts/lab3-source.zip
+          fail_on_unmatched_files: true
