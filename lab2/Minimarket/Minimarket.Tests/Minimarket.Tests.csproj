@@ -7,8 +7,7 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
-    <!-- Use VSTest so xUnit adapter and Coverlet collector work with .NET 10. -->
-    <TestingPlatformDotnetTestSupport>false</TestingPlatformDotnetTestSupport>
+
   </PropertyGroup>
 
   <ItemGroup>
