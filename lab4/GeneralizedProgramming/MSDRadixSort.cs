@@ -1,28 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace GeneralizedProgramming
+﻿namespace GeneralizedProgramming
 {
-    /// <summary>
-    /// MSD radix sort (от старшего разряда к младшему).
-    ///
-    /// Radix-сортировка не сравнивает элементы, ей нужны «цифры». Поэтому для
-    /// произвольного типа T передаётся делегат-ключ: Func&lt;T, int&gt; или Func&lt;T, string&gt;.
-    /// Для int и string есть короткие перегрузки без делегата.
-    ///
-    /// Сортировка стабильная. Сортирует массив или List&lt;T&gt; на месте.
-    /// </summary>
     public static class MSDRadixSort
     {
-        private const int IntRadix = 256;         // основание: один байт
-        private const int IntStartShift = 24;     // начинаем со старшего байта
-        private const uint SignBit = 0x80000000u; // сдвиг для корректной работы с отрицательными числами
+        private const int IntRadix = 256;
+        private const int IntStartShift = 24;
+        private const uint SignBit = 0x80000000u;
 
-        // Для строк разряд = один байт символа UTF-16 (старший, затем младший).
-        // Корзина 0 = «строка закончилась», корзины 1..256 = значения байта + 1.
         private const int StringBuckets = 257;
 
-        // ---------- Публичный API: готовые типы ----------
+
 
         public static void Sort(int[] array) => Sort(array, x => x);
 
@@ -32,7 +18,6 @@ namespace GeneralizedProgramming
 
         public static void Sort(List<string> list) => Sort(list, x => x);
 
-        // ---------- Публичный API: произвольный T с целочисленным ключом ----------
 
         public static void Sort<T>(T[] array, Func<T, int> keySelector)
         {
@@ -53,7 +38,6 @@ namespace GeneralizedProgramming
                 list[i] = buffer[i];
         }
 
-        // ---------- Публичный API: произвольный T со строковым ключом ----------
 
         public static void Sort<T>(T[] array, Func<T, string> keySelector)
         {
@@ -74,14 +58,13 @@ namespace GeneralizedProgramming
                 list[i] = buffer[i];
         }
 
-        // ---------- Целочисленные ключи ----------
 
         private static void SortCore<T>(T[] items, Func<T, int> keySelector)
         {
             int n = items.Length;
             if (n < 2) return;
 
-            // Ключи переводим в uint со сдвигом знака: так порядок uint совпадает с порядком int
+
             var keys = new uint[n];
             for (int i = 0; i < n; i++)
                 keys[i] = unchecked((uint)keySelector(items[i])) ^ SignBit;
@@ -94,7 +77,6 @@ namespace GeneralizedProgramming
         {
             if (hi - lo < 2 || shift < 0) return;
 
-            // 1. Подсчёт размеров корзин (со сдвигом на 1, чтобы получить начала корзин префиксными суммами)
             var count = new int[IntRadix + 1];
             for (int i = lo; i < hi; i++)
                 count[(int)((keys[i] >> shift) & 0xFF) + 1]++;

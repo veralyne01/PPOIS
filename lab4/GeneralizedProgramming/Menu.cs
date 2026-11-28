@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-
-namespace GeneralizedProgramming
+﻿namespace GeneralizedProgramming
 {
     /// <summary>Console menu demonstrating Binary tree sort and MSD radix sort.</summary>
     public sealed class SortingMenu

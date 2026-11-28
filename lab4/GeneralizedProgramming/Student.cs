@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace GeneralizedProgramming
+﻿namespace GeneralizedProgramming
 {
     /// <summary>Пользовательский класс для демонстрации сортировок. Порядок по умолчанию: Age, затем Name.</summary>
     public sealed class Student : IComparable<Student>
