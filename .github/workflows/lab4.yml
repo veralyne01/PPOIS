@@ -172,11 +172,12 @@ jobs:
               (
                 cd "$project_dir"
 
-                dotnet test \
-                  --project "./$project_file" \
+                dotnet test "./$project_file" \
                   --configuration Release \
                   --no-restore \
-                  --results-directory "$outdir" \
+                  -p:CollectCoverage=true \
+                  -p:CoverletOutput="$outdir/coverage/" \
+                  -p:CoverletOutputFormat=cobertura
                   --coverlet \
                   --coverlet-output-format cobertura
               ) || failed=1
