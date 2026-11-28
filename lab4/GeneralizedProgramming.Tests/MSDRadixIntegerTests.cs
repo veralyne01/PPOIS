@@ -1,4 +1,3 @@
-using GeneralizedProgramming;
 using Xunit;
 
 namespace GeneralizedProgramming.Tests;
