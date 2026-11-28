@@ -3,7 +3,7 @@ name: LAB3 CI/CD
 on:
   push:
     branches:
-      - "**"
+      - lab3
     tags:
       - "lab3-v*"
     paths:
@@ -11,6 +11,8 @@ on:
       - ".github/workflows/lab3.yml"
 
   pull_request:
+    branches:
+        - lab3
     paths:
       - "lab3/**"
       - ".github/workflows/lab3.yml"
