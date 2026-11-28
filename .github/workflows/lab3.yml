@@ -134,36 +134,9 @@ jobs:
             mtp=false
 
             if grep -qiE \
-              'Microsoft\.Testing\.Platform|xunit\.v3\.mtp|UseMicrosoftTestingPlatformRunner|TestingPlatformDotnetTestSupport' \
+              'Microsoft\.Testing\.Platform|xunit\.v3\.mtp|UseMicrosoftTestingPlatformRunner|TestingPlatformDotnetTestSupport|coverlet\.MTP' \
               "$project"; then
-
               mtp=true
-            else
-              search_dir="$project_dir"
-
-              while true; do
-                if [ -f "$search_dir/global.json" ] &&
-                   grep -qE \
-                     '"runner"[[:space:]]*:[[:space:]]*"Microsoft\.Testing\.Platform"' \
-                     "$search_dir/global.json"; then
-
-                  mtp=true
-                  break
-                fi
-
-                if [ "$search_dir" = "." ] ||
-                   [ "$search_dir" = "$GITHUB_WORKSPACE" ]; then
-                  break
-                fi
-
-                parent_dir=$(dirname "$search_dir")
-
-                if [ "$parent_dir" = "$search_dir" ]; then
-                  break
-                fi
-
-                search_dir="$parent_dir"
-              done
             fi
 
             if [ "$mtp" = true ]; then
