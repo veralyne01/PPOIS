@@ -6,12 +6,12 @@ public class Sea : NaturalArea
 
     public Sea(double size, string name) : base(size, name, new[]
     {
-        "Дельфин-белобочка", "Синий кит", "Косатка", "Тюлень", "Морж", "Альбатрос",
-        "Чайка", "Баклан", "Пингвин", "Буревестник", "Акула", "Тунец", "Треска",
-        "Камбала", "Скумбрия", "Морской конёк", "Зелёная морская черепаха",
-        "Кожистая черепаха", "Краб камчатский", "Омар", "Креветка", "Лангуст",
-        "Осьминог", "Кальмар", "Мидия", "Устрица", "Морской гребешок", "Медуза",
-        "Актиния", "Коралл", "Ламинария", "Фукус", "Ульва", "Зостера"
+        "Dolphin", "Blue Whale", "Killer whale", "Seal", "Walrus", "Albatross",
+        "Seagull", "Cormorant", "Penguin", "Petrel", "Shark", "Tuna", "Cod",
+        "Flounder", "Mackerel", "Seahorse", "Turtle",
+        "Kamchatka Crab", "Lobster", "Shrimp", "Lobster",
+        "Octopus", "Squid", "Mussel", "Oyster", "Scallop", "Jellyfish",
+        "Sea Anemone", "Coral", "Laminaria", "Fucus", "Ulva", "Zostera", "AquaticPlant"
     })
     {
         Pollution.Add(PollutionType.Water);

@@ -9,14 +9,14 @@ public class WildlifeSanctuary : ProtectedArea
 
     public IReadOnlyCollection<string> ProtectedSpecies => protectedSpecies;
 
-    public WildlifeSanctuary(string name, IEnumerable<string> protectedSpecies) : base(name)
+    public WildlifeSanctuary(string name, IEnumerable<string> protectedSpecies, List<NaturalArea> areas) : base(name, areas)
     {
         this.protectedSpecies = new HashSet<string>(
             protectedSpecies ?? throw new ArgumentNullException(nameof(protectedSpecies)),
             StringComparer.OrdinalIgnoreCase);
 
         if (this.protectedSpecies.Count == 0)
-            throw new ArgumentException("Sanctuary must protect at least one species.", nameof(protectedSpecies));
+            throw new EmptySanctuaryException(nameof(protectedSpecies));
     }
 
     public override bool IsHuntingAllowed(string organismName) =>

@@ -1,4 +1,4 @@
-﻿namespace EcologyProject;
+namespace EcologyProject;
 
 public class Factory
 {
@@ -17,7 +17,7 @@ public class Factory
         Id = Interlocked.Increment(ref nextFactoryId);
         Name = name;
         Type = type;
-        Location = location ?? throw new ArgumentNullException(nameof(location));
+        Location = location ?? throw new FactoryLocationException();
     }
 
     public IReadOnlyDictionary<PollutionType, double> GetPollutionImpact() =>
@@ -43,8 +43,8 @@ public class Factory
 
     public void Pollute(NaturalArea area, double multiplier = 1)
     {
-        if (multiplier < 0)
-            throw new ArgumentOutOfRangeException(nameof(multiplier));
+        if (multiplier < 0 || !double.IsFinite(multiplier))
+            throw new InvalidPollutionValueException();
 
         foreach (var impact in GetPollutionImpact())
             area.Pollution.Increase(impact.Key, impact.Value * multiplier);

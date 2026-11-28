@@ -6,7 +6,7 @@ public class Forest : NaturalArea
 
     public Forest(double size, string name) : base(size, name, new[]
     {
-        "Bear", "Wolf", "Fox", "Lynx",
+        "Bear", "Wolf", "Fox", "Lynx", "Grass", "Shrub",
         "Hog", "Squirrel", "Hedgehog", "Moose", "Deer", "Badger", "Hare",
         "Woodpecker", "Owl", "Cuckoo", "Titmouse", "Capercaillie", "Ant", "Stag beetle",
         "Common viper", "Viviparous lizard", "Grass frog", "Gray Toad",

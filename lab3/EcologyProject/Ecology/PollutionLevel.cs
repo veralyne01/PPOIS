@@ -1,4 +1,4 @@
-﻿namespace EcologyProject;
+namespace EcologyProject;
 
 public class PollutionLevel
 {
@@ -8,16 +8,16 @@ public class PollutionLevel
 
     public void Add(PollutionType type, double value = 0)
     {
-        if (value < 0)
-            throw new ArgumentOutOfRangeException(nameof(value));
+        if (value < 0 || !double.IsFinite(value))
+            throw new InvalidPollutionValueException();
 
         levels[type] = value;
     }
 
     public bool Increase(PollutionType type, double value)
     {
-        if (value < 0)
-            throw new ArgumentOutOfRangeException(nameof(value));
+        if (value < 0 || !double.IsFinite(value))
+            throw new InvalidPollutionValueException();
 
         if (!levels.ContainsKey(type))
             return false;
@@ -28,8 +28,8 @@ public class PollutionLevel
 
     public bool Decrease(PollutionType type, double value)
     {
-        if (value < 0)
-            throw new ArgumentOutOfRangeException(nameof(value));
+        if (value < 0 || !double.IsFinite(value))
+            throw new InvalidPollutionValueException();
 
         if (!levels.ContainsKey(type))
             return false;
