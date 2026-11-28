@@ -1,4 +1,3 @@
-
 name: C# CI/CD
 
 on:
@@ -430,7 +429,11 @@ jobs:
 
       - name: Publish applications
         shell: bash
+        env:
+          LAB: ${{ matrix.lab }}
         run: |
+          mkdir -p artifacts
+
           while IFS= read -r project; do
             name=$(basename "$project" .csproj)
 
@@ -445,6 +448,30 @@ jobs:
               --output "./artifacts/$name"
 
           done < apps.txt
+
+      # =================================================
+      # PACKAGE CLEAN SOURCE ARCHIVE
+      # =================================================
+
+      - name: Create source archive
+        shell: bash
+        env:
+          LAB: ${{ matrix.lab }}
+        run: |
+          if [ ! -d "$LAB" ]; then
+            echo "::error::Laboratory directory $LAB does not exist"
+            exit 1
+          fi
+
+          zip -r "artifacts/${LAB}-source.zip" "$LAB" \
+            -x "*/bin/*" \
+               "*/obj/*" \
+               "*/.vs/*" \
+               "*/.git/*" \
+               "*/TestResults/*" \
+               "*/CoverageReport/*"
+
+          echo "Created source archive: artifacts/${LAB}-source.zip"
 
       # =================================================
       # UPLOAD ARTIFACTS
@@ -575,16 +602,27 @@ jobs:
           find artifacts -type f -name '*.exe' -print
 
           count=$(find artifacts -type f -name '*.exe' | wc -l)
+          source_archive=$(find artifacts -maxdepth 1 -type f \
+            -name '*-source.zip' -print -quit)
 
           if [ "$count" -lt 1 ]; then
             echo "::error::No executable files found"
             exit 1
           fi
 
+          if [ -z "$source_archive" ]; then
+            echo "::error::Source archive not found"
+            exit 1
+          fi
+
+          echo "Found source archive: $source_archive"
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
-          files: artifacts/**/*.exe
+          files: |
+            artifacts/**/*.exe
+            artifacts/*-source.zip
           generate_release_notes: true
