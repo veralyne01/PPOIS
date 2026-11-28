@@ -238,8 +238,6 @@
             GraphAlgorithms.ForEach(iterator, item => Console.WriteLine($"  {++n}. {item}"));
         }
 
-        // ---------- Копирование и сравнение ----------
-
         private void CopyAndCompare()
         {
             Graph<string> copy = _graph.Clone();

@@ -2,17 +2,10 @@
 
 namespace GeneralizedProgramming
 {
-    /// <summary>Внутренний контракт владельца итератора (нужен для проверки версии графа).</summary>
     internal interface IGraphOwner
     {
         int Version { get; }
     }
-
-    /// <summary>
-    /// Двунаправленный итератор. Позиции: -1 = перед началом, Count = за концом.
-    /// Итератор работает по снимку, сделанному в момент создания. Если граф
-    /// изменился после создания итератора, итератор становится недействительным.
-    /// </summary>
     public abstract class GraphIteratorBase<TItem> : IEnumerator<TItem>
     {
         private readonly List<TItem> _items;
@@ -38,7 +31,7 @@ namespace GeneralizedProgramming
             {
                 EnsureValid();
                 if (_index < 0 || _index >= _items.Count)
-                    throw new InvalidIteratorException("Итератор не указывает на элемент (до начала или за концом).");
+                    throw new InvalidIteratorException("Iterator failed.");
                 return _items[_index];
             }
         }
@@ -70,26 +63,22 @@ namespace GeneralizedProgramming
         private void EnsureValid()
         {
             if (!IsValid)
-                throw new InvalidIteratorException("Граф был изменён, итератор недействителен.");
+                throw new InvalidIteratorException("Iterator is not valid anymore");
         }
     }
 
-    /// <summary>Изменяющий итератор: его можно передать в RemoveVertex / RemoveEdge.</summary>
     public sealed class GraphIterator<TItem> : GraphIteratorBase<TItem>
     {
         internal GraphIterator(IGraphOwner owner, List<TItem> items) : base(owner, items) { }
     }
 
-    /// <summary>Константный итератор: только чтение.</summary>
     public sealed class ConstGraphIterator<TItem> : GraphIteratorBase<TItem>
     {
         internal ConstGraphIterator(IGraphOwner owner, List<TItem> items) : base(owner, items) { }
     }
 
-    /// <summary>Обобщённые алгоритмы обхода поверх итераторов графа.</summary>
     public static class GraphAlgorithms
     {
-        /// <summary>Применяет действие ко всем элементам, начиная с позиции итератора.</summary>
         public static void ForEach<TItem>(GraphIteratorBase<TItem> iterator, Action<TItem> action)
         {
             if (iterator == null) throw new ArgumentNullException(nameof(iterator));

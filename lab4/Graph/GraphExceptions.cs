@@ -1,6 +1,5 @@
 namespace GeneralizedProgramming
 {
-    /// <summary>Базовое исключение контейнера Graph.</summary>
     public class GraphException : Exception
     {
         public GraphException(string message) : base(message) { }
