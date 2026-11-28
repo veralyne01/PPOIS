@@ -8,6 +8,8 @@ on:
     tags:
       - "lab1-v*"
       - "lab2-v*"
+      - "lab3-v*"
+      - "lab4-v*"
 
   pull_request:
 
@@ -54,9 +56,15 @@ jobs:
           elif [[ "$GITHUB_REF" == refs/tags/lab2-v* ]]; then
             labs=("lab2")
 
-          # Manual run builds both laboratories.
+          elif [[ "$GITHUB_REF" == refs/tags/lab3-v* ]]; then
+            labs=("lab3")
+
+          elif [[ "$GITHUB_REF" == refs/tags/lab4-v* ]]; then
+            labs=("lab4")
+
+          # Manual run builds all laboratories.
           elif [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
-            labs=("lab1" "lab2")
+            labs=("lab1" "lab2" "lab3" "lab4")
 
           else
             if [[ "$EVENT_NAME" == "pull_request" ]]; then
@@ -66,13 +74,13 @@ jobs:
             fi
 
             # If the previous commit is unavailable,
-            # build both laboratories to be safe.
+            # build all laboratories to be safe.
             if [[ -z "$BASE_SHA" ]] ||
                [[ "$BASE_SHA" =~ ^0+$ ]] ||
                ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
 
-              echo "Base commit unavailable. Building both laboratories."
-              labs=("lab1" "lab2")
+              echo "Base commit unavailable. Building all laboratories."
+              labs=("lab1" "lab2" "lab3" "lab4")
 
             else
               echo "Changed files:"
@@ -88,6 +96,16 @@ jobs:
                   lab2/*)
                     if [[ ! " ${labs[*]} " =~ " lab2 " ]]; then
                       labs+=("lab2")
+                    fi
+                    ;;
+                  lab3/*)
+                    if [[ ! " ${labs[*]} " =~ " lab3 " ]]; then
+                      labs+=("lab3")
+                    fi
+                    ;;
+                  lab4/*)
+                    if [[ ! " ${labs[*]} " =~ " lab4 " ]]; then
+                      labs+=("lab4")
                     fi
                     ;;
                 esac
@@ -491,10 +509,10 @@ jobs:
         with:
           dotnet-version: "10.0.401"
 
-      - name: Restore projects from both labs
+      - name: Restore projects from all labs
         shell: bash
         run: |
-          find lab1 lab2 -type f -name '*.csproj' \
+          find lab1 lab2 lab3 lab4 -type f -name '*.csproj' \
             -not -path '*/bin/*' \
             -not -path '*/obj/*' \
             | sort | while IFS= read -r project; do
@@ -526,12 +544,14 @@ jobs:
   # =====================================================
 
   release:
-    name: Publish ${{ startsWith(github.ref, 'refs/tags/lab1-') && 'Lab1' || 'Lab2' }} Release
+    name: Publish ${{ startsWith(github.ref, 'refs/tags/lab1-') && 'Lab1' || startsWith(github.ref, 'refs/tags/lab2-') && 'Lab2' || startsWith(github.ref, 'refs/tags/lab3-') && 'Lab3' || 'Lab4' }} Release
 
     if: |
       github.event_name == 'push' &&
       (startsWith(github.ref, 'refs/tags/lab1-v') ||
-       startsWith(github.ref, 'refs/tags/lab2-v'))
+       startsWith(github.ref, 'refs/tags/lab2-v') ||
+       startsWith(github.ref, 'refs/tags/lab3-v') ||
+       startsWith(github.ref, 'refs/tags/lab4-v'))
 
     needs: build
 
@@ -544,7 +564,7 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: ${{ startsWith(github.ref, 'refs/tags/lab1-') && 'lab1-build' || 'lab2-build' }}
+          name: ${{ startsWith(github.ref, 'refs/tags/lab1-') && 'lab1-build' || startsWith(github.ref, 'refs/tags/lab2-') && 'lab2-build' || startsWith(github.ref, 'refs/tags/lab3-') && 'lab3-build' || 'lab4-build' }}
           path: artifacts/
 
       - name: Verify executables
